@@ -1,0 +1,122 @@
+﻿<!doctype html>
+<html lang="ru">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="assets/img/favicon.ico" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Олюшин | Портфолио</title>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260626a" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="navbar">
+        <a class="brand" href="index.html">Портфолио</a>
+
+        <div class="nav-actions">
+          <button class="burger" data-burger aria-label="Меню" aria-expanded="false">
+            ☰ <span class="burger-label">Меню</span>
+          </button>
+        </div>
+
+        <nav class="nav" data-nav>
+          <a class="active" href="index.html">Главная страница</a>
+          <a href="pages/education.html">Образование</a>
+          <a href="pages/work-experience.html">Опыт работы</a>
+
+          <div class="dropdown" data-dropdown>
+            <button type="button" data-dropdown-btn aria-haspopup="true" aria-expanded="false">
+              Достижения ▾
+            </button>
+            <div class="dropdown-panel">
+              <a href="pages/achievements/teacher.html">Преподавателя</a>
+              <a href="pages/achievements/students.html">Студентов</a>
+            </div>
+          </div>
+
+          <a href="pages/student-works.html">Работы студентов</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1 class="page-title">Олюшин Владислав Викторович</h1>
+    <p class="subtitle">Портфолио преподавателя</p>
+
+    <section class="section hero">
+      <div class="portrait">
+        <div class="portrait-card" id="portraitCard" role="button" tabindex="0"
+             aria-label="Открыть фото в полном размере">
+          <img
+            src="assets/img/portrait.jpg"
+            alt="Фото преподавателя"
+            id="portraitImg"
+          />
+        </div>
+      </div>
+
+      <div>
+        <h2>Краткая информация</h2>
+        <ul class="factlist">
+          <li><b>Город:</b> Славгород</li>
+          <li><b>Педагогический стаж:</b> 2 года</li>
+          <li><b>Квалификационная категория:</b> без категории</li>
+          <li><b>Место работы:</b>
+            <a href="https://vk.com/yarovoe_tehnikum">КГБПОУ "Яровской политехнический техникум"</a>
+          </li>
+          <li><b>Адрес учреждения:</b> 658839, Алтайский край, г. Яровое, ул. Гагарина, 10</li>
+          <li><b>Телефон учреждения:</b> +7 (385) 682 07-75</li>
+          <li><b>Должность:</b> Преподаватель</li>
+          <li><b>Преподаваемые дисциплины:</b> специальные дисциплины направления ИСиП</li>
+          <li><b>Email:</b> <a href="mailto:vladislav-olyushin@mail.ru">vladislav-olyushin@mail.ru</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Описание</h2>
+      <p>
+        Преподаватель специальных дисциплин по направлению «Информационные системы и программирование».
+        В работе уделяю особое внимание формированию практических навыков программирования,
+        работе с информационными системами и подготовке студентов к реальным профессиональным задачам в сфере IT.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Место работы</h2>
+      <div class="map-wrapper">
+        <iframe
+          src="https://yandex.ru/map-widget/v1/?ll=78.564672%2C52.915145&z=18&mode=poi&poi%5Bpoint%5D=78.564001%2C52.914537"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>&copy; 2026 Олюшин Владислав Викторович</span>
+    </div>
+  </footer>
+
+  <div class="img-modal" id="imgModal" aria-hidden="true" role="dialog">
+    <div class="img-modal__dialog">
+      <img class="img-modal__img" id="imgModalImg" alt="Документ" />
+      <iframe class="img-modal__frame" id="imgModalFrame" title="Документ" hidden></iframe>
+    </div>
+  </div>
+
+  <script src="assets/js/main.js?v=20260626a"></script>
+</body>
+</html>
+
+
+
+
+
+
+
