@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="../../assets/img/favicon.ico" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Олюшин | Достижения</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css?v=20260626a" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="navbar">
+        <a class="brand" href="../../index.html">Портфолио</a>
+
+        <div class="nav-actions">
+          <button class="burger" data-burger aria-label="Меню" aria-expanded="false">
+            ☰ <span class="burger-label">Меню</span>
+          </button>
+        </div>
+
+        <nav class="nav" data-nav>
+          <a href="../../index.html">Главная страница</a>
+          <a href="../education.html">Образование</a>
+          <a href="../work-experience.html">Опыт работы</a>
+          <div class="dropdown" data-dropdown>
+            <button type="button" class="active" data-dropdown-btn aria-haspopup="true" aria-expanded="false">
+              Достижения ▾
+            </button>
+            <div class="dropdown-panel">
+              <a href="teacher.html">Преподавателя</a>
+              <a href="students.html">Студентов</a>
+            </div>
+          </div>
+
+          <a href="../student-works.html">Работы студентов</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1 class="page-title">Достижения</h1>
+    <p class="subtitle">Сертификаты, благодарности и дипломы преподавателя и студентов.</p>
+
+    <section class="section" id="teacher">
+      <h2>Преподавателя</h2>
+      <div class="btn-row">
+        <a class="btn btn--block" href="teacher.html">Достижения преподавателя</a>
+      </div>
+    </section>
+
+    <section class="section" id="students">
+      <h2>Студентов</h2>
+      <div class="btn-row">
+        <a class="btn btn--block" href="students.html">Достижения студентов</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Работы студентов</h2>
+      <p>
+        Отдельная подборка учебных проектов и практических материалов теперь собрана на самостоятельной странице.
+      </p>
+      <div class="btn-row">
+        <a class="btn btn--block" href="../student-works.html">Открыть работы студентов</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>&copy; 2026 Олюшин Владислав Викторович</span>
+    </div>
+  </footer>
+
+  <div class="img-modal" id="imgModal" aria-hidden="true" role="dialog">
+    <div class="img-modal__dialog">
+      <img class="img-modal__img" id="imgModalImg" alt="Документ" />
+      <iframe class="img-modal__frame" id="imgModalFrame" title="Документ" hidden></iframe>
+    </div>
+  </div>
+
+  <script src="../../assets/js/main.js?v=20260626a"></script>
+</body>
+</html>
