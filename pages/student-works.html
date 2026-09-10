@@ -6,7 +6,7 @@
   <link rel="icon" href="../assets/img/favicon.ico" type="image/x-icon">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Олюшин | Работы студентов</title>
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260910g" />
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260910h" />
 </head>
 
 <body>
@@ -50,8 +50,8 @@
     </p>
 
     <section class="section" id="featured-projects">
-      <div class="project-grid" data-project-grid>
-        <article class="project-card" data-project-folder="../content/students-work/Проект 1 - Разработка мобильного ПО Поехали! Славгород">
+      <div class="project-grid">
+        <article class="project-card">
           <div class="project-card__preview">
             <span class="project-card__mark">APP</span>
             <span class="project-card__year">2026</span>
@@ -85,7 +85,7 @@
           </div>
         </article>
 
-        <article class="project-card" data-project-folder="../content/students-work/Проект 2 - Разработка ПО Мультифора">
+        <article class="project-card">
           <div class="project-card__preview">
             <span class="project-card__mark">DEV</span>
             <span class="project-card__year">2026</span>
@@ -118,7 +118,7 @@
           </div>
         </article>
 
-        <article class="project-card" data-project-folder="../content/students-work/Проект 3 - Разработка сайта бара Прибой">
+        <article class="project-card">
           <div class="project-card__preview">
             <span class="project-card__mark">WEB</span>
             <span class="project-card__year">2026</span>
@@ -147,7 +147,7 @@
           </div>
         </article>
 
-        <article class="project-card" data-project-folder="../content/students-work/Проект 4 - Разработка сайта по продаже комплектующих">
+        <article class="project-card">
           <div class="project-card__preview">
             <span class="project-card__mark">ВКР</span>
             <span class="project-card__year">2026</span>
@@ -186,13 +186,14 @@
     </div>
   </footer>
 
-  <div class="img-modal" id="imgModal" aria-hidden="true" role="dialog">
+  <div class="img-modal" id="imgModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Просмотр документа">
     <div class="img-modal__dialog">
-      <img class="img-modal__img" id="imgModalImg" alt="Документ" />
+      <button class="img-modal__close" type="button" data-modal-close aria-label="Закрыть">&times;</button>
+      <img class="img-modal__img" id="imgModalImg" alt="Документ" hidden />
       <iframe class="img-modal__frame" id="imgModalFrame" title="Документ" hidden></iframe>
     </div>
   </div>
 
-  <script src="../assets/js/main.js?v=20260626a"></script>
+  <script src="../assets/js/main.js?v=20260910h"></script>
 </body>
 </html>
