@@ -356,6 +356,224 @@ class DropdownManager {
 }
 
 /**
+ * Визуальная оболочка над нативным select в стиле сайта.
+ * Исходный элемент остаётся источником значения для фильтров галереи.
+ */
+class ThemedSelect {
+  /**
+   * @param {{select:HTMLSelectElement,onOpen:(current:ThemedSelect)=>void}} opts
+   */
+  constructor(opts) {
+    this.select = opts.select;
+    this.onOpen = opts.onOpen;
+    this.root = null;
+    this.button = null;
+    this.value = null;
+    this.list = null;
+    this.options = [];
+
+    this.onButtonClick = this.onButtonClick.bind(this);
+    this.onButtonKeyDown = this.onButtonKeyDown.bind(this);
+    this.onListClick = this.onListClick.bind(this);
+    this.onListKeyDown = this.onListKeyDown.bind(this);
+    this.syncFromNative = this.syncFromNative.bind(this);
+  }
+
+  init() {
+    if (!this.select || this.select.dataset.themedSelectReady === 'true') return;
+
+    const id = `themed-select-${ThemedSelect.nextId++}`;
+    this.root = document.createElement('div');
+    this.root.className = 'themed-select';
+
+    this.button = document.createElement('button');
+    this.button.type = 'button';
+    this.button.id = `${id}-button`;
+    this.button.className = 'themed-select__button';
+    this.button.setAttribute('aria-haspopup', 'listbox');
+    this.button.setAttribute('aria-expanded', 'false');
+    this.button.setAttribute('aria-controls', `${id}-list`);
+
+    this.value = document.createElement('span');
+    this.value.className = 'themed-select__value';
+
+    const arrow = document.createElement('span');
+    arrow.className = 'themed-select__arrow';
+    arrow.setAttribute('aria-hidden', 'true');
+    this.button.append(this.value, arrow);
+
+    this.list = document.createElement('div');
+    this.list.id = `${id}-list`;
+    this.list.className = 'themed-select__list';
+    this.list.setAttribute('role', 'listbox');
+    this.list.setAttribute('aria-labelledby', `${id}-button`);
+    this.list.hidden = true;
+
+    Array.from(this.select.options).forEach((nativeOption) => {
+      const option = document.createElement('button');
+      option.type = 'button';
+      option.className = 'themed-select__option';
+      option.dataset.value = nativeOption.value;
+      option.textContent = nativeOption.textContent;
+      option.setAttribute('role', 'option');
+      option.setAttribute('aria-selected', 'false');
+      this.list.appendChild(option);
+      this.options.push(option);
+    });
+
+    this.root.append(this.button, this.list);
+    this.select.insertAdjacentElement('afterend', this.root);
+    this.select.classList.add('themed-select__native');
+    this.select.tabIndex = -1;
+    this.select.setAttribute('aria-hidden', 'true');
+    this.select.dataset.themedSelectReady = 'true';
+
+    this.button.addEventListener('click', this.onButtonClick);
+    this.button.addEventListener('keydown', this.onButtonKeyDown);
+    this.list.addEventListener('click', this.onListClick);
+    this.list.addEventListener('keydown', this.onListKeyDown);
+    this.select.addEventListener('change', this.syncFromNative);
+    this.select.addEventListener('themed-select-sync', this.syncFromNative);
+    this.syncFromNative();
+  }
+
+  isOpen() {
+    return this.root?.classList.contains('is-open') || false;
+  }
+
+  open({ focusOption = false } = {}) {
+    if (!this.root || !this.list || !this.button) return;
+    this.onOpen(this);
+    this.root.classList.add('is-open');
+    this.list.hidden = false;
+    this.button.setAttribute('aria-expanded', 'true');
+
+    if (focusOption) {
+      (this.getSelectedOption() || this.options[0])?.focus();
+    }
+  }
+
+  close({ restoreFocus = false } = {}) {
+    if (!this.root || !this.list || !this.button) return;
+    this.root.classList.remove('is-open');
+    this.list.hidden = true;
+    this.button.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) this.button.focus();
+  }
+
+  toggle() {
+    this.isOpen() ? this.close() : this.open();
+  }
+
+  syncFromNative() {
+    if (!this.select || !this.value) return;
+    const selected = this.select.selectedOptions[0];
+    this.value.textContent = selected?.textContent || '';
+
+    this.options.forEach((option) => {
+      const isSelected = option.dataset.value === this.select.value;
+      option.classList.toggle('is-selected', isSelected);
+      option.setAttribute('aria-selected', String(isSelected));
+    });
+  }
+
+  getSelectedOption() {
+    return this.options.find((option) => option.dataset.value === this.select.value) || null;
+  }
+
+  selectOption(option) {
+    if (!option) return;
+    this.select.value = option.dataset.value || '';
+    this.syncFromNative();
+    this.select.dispatchEvent(new Event('change', { bubbles: true }));
+    this.close({ restoreFocus: true });
+  }
+
+  moveFocus(current, step) {
+    const index = Math.max(0, this.options.indexOf(current));
+    const nextIndex = (index + step + this.options.length) % this.options.length;
+    this.options[nextIndex]?.focus();
+  }
+
+  onButtonClick(e) {
+    e.preventDefault();
+    this.toggle();
+  }
+
+  onButtonKeyDown(e) {
+    if (!['ArrowDown', 'ArrowUp'].includes(e.key)) return;
+    e.preventDefault();
+    this.open({ focusOption: true });
+  }
+
+  onListClick(e) {
+    const option = e.target?.closest?.('.themed-select__option');
+    if (option) this.selectOption(option);
+  }
+
+  onListKeyDown(e) {
+    const option = e.target?.closest?.('.themed-select__option');
+    if (!option) return;
+
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.moveFocus(option, e.key === 'ArrowDown' ? 1 : -1);
+      return;
+    }
+
+    if (e.key === 'Home' || e.key === 'End') {
+      e.preventDefault();
+      this.options[e.key === 'Home' ? 0 : this.options.length - 1]?.focus();
+      return;
+    }
+
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      this.selectOption(option);
+      return;
+    }
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      this.close({ restoreFocus: true });
+    }
+  }
+}
+
+ThemedSelect.nextId = 1;
+
+class ThemedSelectManager {
+  constructor() {
+    this.selects = [];
+    this.onDocumentClick = this.onDocumentClick.bind(this);
+  }
+
+  init() {
+    const nativeSelects = Array.from(document.querySelectorAll('.gallery-controls select'));
+    this.selects = nativeSelects.map((select) => new ThemedSelect({
+      select,
+      onOpen: (current) => this.closeAll(current),
+    }));
+    this.selects.forEach((select) => select.init());
+
+    if (this.selects.length) {
+      document.addEventListener('click', this.onDocumentClick);
+    }
+  }
+
+  closeAll(except = null) {
+    this.selects.forEach((select) => {
+      if (select !== except) select.close();
+    });
+  }
+
+  onDocumentClick(e) {
+    const clickedInside = this.selects.some((select) => select.root?.contains(e.target));
+    if (!clickedInside) this.closeAll();
+  }
+}
+
+/**
  * Плавно показывает элементы при появлении в зоне видимости.
  */
 class RevealOnScroll {
@@ -698,7 +916,7 @@ class AutoGallery {
     this.cache = new Map();
     this.controls = new Map();
     this.storagePrefix = 'olyushinvv:auto-gallery:';
-    this.storageVersion = 'v5';
+    this.storageVersion = 'v6';
     this.storageTtlMs = 7 * 24 * 60 * 60 * 1000;
   }
 
@@ -728,7 +946,7 @@ class AutoGallery {
     const cached = this.loadPersistentCache(cfg);
     if (cached && cached.length) {
       this.cache.set(gallery, cached);
-      this.renderFromCache(gallery, cfg);
+      this.renderFromCache(gallery);
     }
 
     try {
@@ -752,7 +970,7 @@ class AutoGallery {
 
       this.cache.set(gallery, images);
       this.savePersistentCache(cfg, images);
-      this.renderFromCache(gallery, cfg);
+      this.renderFromCache(gallery);
     } catch (error) {
       console.error('AutoGallery error:', error);
       const fallback = this.getEmbeddedManifestFiles(cfg.manifest);
@@ -772,7 +990,7 @@ class AutoGallery {
         if (images.length) {
           this.cache.set(gallery, images);
           this.savePersistentCache(cfg, images);
-          this.renderFromCache(gallery, cfg);
+          this.renderFromCache(gallery);
           return;
         }
       }
@@ -826,17 +1044,19 @@ class AutoGallery {
   getGalleryCategory(gallery) {
     const cached = this.controls.get(gallery) || {};
     const categoryEl = cached.categoryEl || null;
-    const value = String(categoryEl?.value || gallery.dataset.galleryCategory || 'diplomas').toLowerCase();
+    const value = String(categoryEl?.value || gallery.dataset.galleryCategory || 'all').toLowerCase();
     return this.normalizeGalleryCategory(value);
   }
 
   /**
    * @param {string} value
-   * @returns {'diplomas'|'certificates'|'gratitude'}
+   * @returns {'all'|'diplomas'|'certificates'|'gratitude'}
    */
   normalizeGalleryCategory(value) {
     const category = String(value || '').toLowerCase();
-    return ['certificates', 'gratitude'].includes(category) ? category : 'diplomas';
+    return ['all', 'diplomas', 'certificates', 'gratitude'].includes(category)
+      ? category
+      : 'all';
   }
 
   /**
@@ -941,6 +1161,9 @@ class AutoGallery {
    * @returns {string}
    */
   getGalleryTitle(gallery, category) {
+    if (category === 'all') {
+      return gallery.dataset.galleryTitleAll || 'Награда';
+    }
     if (category === 'certificates' && gallery.dataset.galleryTitleCertificates) {
       return gallery.dataset.galleryTitleCertificates;
     }
@@ -1196,9 +1419,12 @@ class AutoGallery {
 
     if (clearBtn) {
       clearBtn.addEventListener('click', () => {
+        if (categoryEl) categoryEl.value = gallery.dataset.galleryCategory || 'all';
         if (fromEl) fromEl.value = '';
         if (toEl) toEl.value = '';
         if (sortEl) sortEl.value = gallery.dataset.gallerySort || 'name-asc';
+        categoryEl?.dispatchEvent(new Event('themed-select-sync'));
+        sortEl?.dispatchEvent(new Event('themed-select-sync'));
         this.renderFromCache(gallery);
       });
     }
@@ -1313,12 +1539,31 @@ class AutoGallery {
   }
 
   /**
+   * Фильтрует документы по имени, подписи и пути.
+   * При пустом запросе возвращает полный список.
+   *
+   * @param {Array<{name?:string,path?:string,displayName?:string}>} images
+   * @param {string} query
+   */
+  filterBySearch(images, query) {
+    const normalizedQuery = String(query || '').trim().toLowerCase();
+    if (!normalizedQuery) return images;
+
+    return images.filter((img) => (
+      [img.name, img.displayName, img.path]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(normalizedQuery))
+    ));
+  }
+
+  /**
    * Оставляет только документы выбранного типа.
    * @param {Array<{category?:string}>} images
    * @param {string} category
    */
   filterByCategory(images, category) {
     const selectedCategory = this.normalizeGalleryCategory(category);
+    if (selectedCategory === 'all') return images;
     return images.filter((img) => this.getItemCategory(img) === selectedCategory);
   }
 
@@ -1940,6 +2185,7 @@ class App {
     });
 
     this.dropdownManager = new DropdownManager();
+    this.themedSelectManager = new ThemedSelectManager();
 
     this.reveal = new RevealOnScroll({
       selectors: '.page-title, .subtitle, .section, .row, .tile, .hero, .portrait, .badge, .btn, .repo-card, .project-card, .project-grid',
@@ -1972,6 +2218,7 @@ class App {
   init() {
     this.mobileMenu.init();
     this.dropdownManager.init();
+    this.themedSelectManager.init();
     this.reveal.init();
     this.imageModal.init();
     this.autoGallery.init();
