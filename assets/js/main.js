@@ -8,50 +8,53 @@ const GALLERY_FILE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'a
 // Каталоги хранят относительные пути, поэтому работают и через сервер, и при открытии HTML с диска.
 const ACHIEVEMENT_FILES = Object.freeze({
   teacher: [
-    'certificates/2025-undated_1.webp',
-    'certificates/2025-10-07_2.webp',
-    'certificates/2025-10-07_3.webp',
-    'diplomas/2025-undated_4.webp',
-    'certificates/2025-05-22_5.webp',
-    'diplomas/2025-undated_6.webp',
-    'gratitude/2025-03-20_7.webp',
-    'gratitude/2025-undated_8.webp',
-    'gratitude/2025-05-30_9.webp',
-    'certificates/2025-11-14_10.webp',
-    'gratitude/2025-undated_11.webp',
-    'certificates/2025-12-26_12.webp',
-    'certificates/2025-12-26_13.webp',
-    'gratitude/2026-undated_14.webp',
-    'certificates/2026-01-16_15.webp',
-    'gratitude/2025-12-26_16.webp',
-    'certificates/2024-12-25_17.webp',
-    'gratitude/2026-undated_18.webp',
-    'gratitude/2026-undated_19.webp',
-    'gratitude/2026-03-19_20.webp',
-    'gratitude/2026-04-18_21.webp',
-    'gratitude/2026-undated_22.webp',
+    'certificates/01_2025-undated.webp',
+    'certificates/02_2025-10-07.webp',
+    'certificates/03_2025-10-07.webp',
+    'diplomas/04_2025-undated.webp',
+    'certificates/05_2025-05-22.webp',
+    'diplomas/06_2025-undated.webp',
+    'gratitude/07_2025-03-20.webp',
+    'gratitude/08_2025-undated.webp',
+    'gratitude/09_2025-05-30.webp',
+    'certificates/10_2025-11-14.webp',
+    'gratitude/11_2025-undated.webp',
+    'certificates/12_2025-12-26.webp',
+    'certificates/13_2025-12-26.webp',
+    'gratitude/14_2026-undated.webp',
+    'certificates/15_2026-01-16.webp',
+    'gratitude/16_2025-12-26.webp',
+    'certificates/17_2024-12-25.webp',
+    'gratitude/18_2026-undated.webp',
+    'gratitude/19_2026-undated.webp',
+    'gratitude/20_2026-03-19.webp',
+    'gratitude/21_2026-04-18.webp',
+    'gratitude/22_2026-undated.webp',
+    'certificates/23_2026-09-13.webp',
+    'certificates/24_2026-09-13.webp',
+    'certificates/25_2026-09-13.webp',
   ],
   students: [
-    'certificates/2025-undated_1.webp',
-    'certificates/2025-undated_2.webp',
-    'certificates/2025-03-20_3.webp',
-    'diplomas/2025-undated_4.webp',
-    'diplomas/2025-05-30_5.webp',
-    'diplomas/2025-05-30_6.webp',
-    'diplomas/2025-undated_7.webp',
-    'diplomas/2025-12-26_8.webp',
-    'diplomas/2026-undated_9.webp',
-    'diplomas/2026-undated_10.webp',
-    'diplomas/2026-undated_11.webp',
-    'diplomas/2026-undated_12.webp',
-    'diplomas/2026-undated_13.webp',
-    'diplomas/2026-undated_14.webp',
-    'diplomas/2026-undated_15.webp',
-    'diplomas/2026-undated_16.webp',
-    'diplomas/2026-undated_17.webp',
-    'certificates/2026-04-18_18.webp',
-    'certificates/2026-04-18_19.webp',
-    'certificates/2026-04-18_20.webp',
+    'certificates/01_2025-undated.webp',
+    'certificates/02_2025-undated.webp',
+    'certificates/03_2025-03-20.webp',
+    'diplomas/04_2025-undated.webp',
+    'diplomas/05_2025-05-30.webp',
+    'diplomas/06_2025-05-30.webp',
+    'diplomas/07_2025-undated.webp',
+    'diplomas/08_2025-12-26.webp',
+    'diplomas/09_2026-undated.webp',
+    'diplomas/10_2026-undated.webp',
+    'diplomas/11_2026-undated.webp',
+    'diplomas/12_2026-undated.webp',
+    'diplomas/13_2026-undated.webp',
+    'diplomas/14_2026-undated.webp',
+    'diplomas/15_2026-undated.webp',
+    'diplomas/16_2026-undated.webp',
+    'diplomas/17_2026-undated.webp',
+    'certificates/18_2026-04-18.webp',
+    'certificates/19_2026-04-18.webp',
+    'certificates/20_2026-04-18.webp',
   ],
 });
 
@@ -547,6 +550,7 @@ class AchievementGallery {
         .map((entry) => this.normalizeItem(entry))
         .filter(Boolean);
       this.galleries.set(gallery, { controls, config, items });
+      this.populateAcademicYearControl(controls.academicYear, items);
       this.bindControls(gallery, controls, config);
       if (items.length) this.render(gallery);
       else this.renderStatus(gallery, 'В каталоге пока нет наград.');
@@ -581,6 +585,7 @@ class AchievementGallery {
 
     const controls = {
       category: root.querySelector('[data-gallery-category]'),
+      academicYear: root.querySelector('[data-gallery-academic-year]'),
       sort: root.querySelector('[data-gallery-sort]'),
       from: root.querySelector('[data-gallery-from]'),
       to: root.querySelector('[data-gallery-to]'),
@@ -591,20 +596,24 @@ class AchievementGallery {
 
   bindControls(gallery, controls, config) {
     controls.category.value = config.defaultCategory;
+    controls.academicYear.value = 'all';
     controls.sort.value = config.defaultSort;
     controls.category.dispatchEvent(new Event('themed-select-sync'));
+    controls.academicYear.dispatchEvent(new Event('themed-select-sync'));
     controls.sort.dispatchEvent(new Event('themed-select-sync'));
 
-    [controls.category, controls.sort, controls.from, controls.to].forEach((control) => {
+    [controls.category, controls.academicYear, controls.sort, controls.from, controls.to].forEach((control) => {
       control.addEventListener('change', () => this.render(gallery));
     });
 
     controls.clear.addEventListener('click', () => {
       controls.category.value = config.defaultCategory;
+      controls.academicYear.value = 'all';
       controls.sort.value = config.defaultSort;
       controls.from.value = '';
       controls.to.value = '';
       controls.category.dispatchEvent(new Event('themed-select-sync'));
+      controls.academicYear.dispatchEvent(new Event('themed-select-sync'));
       controls.sort.dispatchEvent(new Event('themed-select-sync'));
       this.render(gallery);
     });
@@ -684,12 +693,17 @@ class AchievementGallery {
 
     const { controls, config } = state;
     const category = this.normalizeCategory(controls.category.value);
+    const academicYear = controls.academicYear.value;
     const from = this.parseDateInput(controls.from.value);
     const to = this.parseDateInput(controls.to.value, true);
 
     let items = category === 'all'
       ? [...state.items]
       : state.items.filter((item) => item.category === category);
+
+    if (academicYear !== 'all') {
+      items = items.filter((item) => this.getAcademicYear(item)?.key === academicYear);
+    }
 
     if (from || to) {
       items = items.filter((item) => {
@@ -702,7 +716,7 @@ class AchievementGallery {
     if (!items.length) {
       this.renderStatus(gallery, from || to
         ? 'Нет наград в выбранном диапазоне.'
-        : 'В выбранной категории пока нет наград.');
+        : 'По выбранным параметрам наград пока нет.');
       return;
     }
 
@@ -732,9 +746,33 @@ class AchievementGallery {
     return `${baseUrl}/${encodedPath}`;
   }
 
+  getAcademicYear(item) {
+    if (!item.date) return null;
+
+    const date = new Date(item.date);
+    const year = date.getFullYear();
+    const startYear = date.getMonth() >= 8 ? year : year - 1;
+    return {
+      key: String(startYear),
+      startYear,
+      title: `${startYear}\u2013${startYear + 1}`,
+    };
+  }
+
+  populateAcademicYearControl(control, items) {
+    const years = [...new Map(items
+      .map((item) => this.getAcademicYear(item))
+      .filter(Boolean)
+      .map((year) => [year.key, year])).values()]
+      .sort((left, right) => right.startYear - left.startYear);
+
+    const options = [new Option('Все учебные годы', 'all')];
+    years.forEach((year) => options.push(new Option(year.title, year.key)));
+    control.replaceChildren(...options);
+  }
+
   renderItems(gallery, items, config) {
     const fragment = document.createDocumentFragment();
-
     items.forEach((item, index) => {
       const src = this.buildFileUrl(config.baseUrl, item.relativePath);
       const tile = document.createElement('div');
@@ -799,6 +837,30 @@ class ProjectDownloads {
   }
 }
 
+// Показывает кнопку возврата наверх после прокрутки первого экрана.
+class BackToTop {
+  init() {
+    const button = document.createElement('button');
+    button.className = 'back-to-top';
+    button.type = 'button';
+    button.setAttribute('aria-label', 'Вернуться наверх страницы');
+    button.setAttribute('title', 'Наверх');
+    button.innerHTML = '<span aria-hidden="true">↑</span>';
+    document.body.appendChild(button);
+
+    const updateVisibility = () => {
+      button.classList.toggle('is-visible', window.scrollY > 320);
+    };
+
+    button.addEventListener('click', () => {
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+    window.addEventListener('scroll', updateVisibility, { passive: true });
+    updateVisibility();
+  }
+}
+
 // Старые версии сайта регистрировали service worker. Удаляем его кеши,
 // чтобы постоянные посетители не получали устаревшие страницы после обновления.
 function cleanupLegacyServiceWorker() {
@@ -822,10 +884,11 @@ function cleanupLegacyServiceWorker() {
 document.addEventListener('DOMContentLoaded', () => {
   updateTeachingExperience();
   new Navigation().init();
-  new ThemedSelectManager().init();
   new AchievementGallery().init();
+  new ThemedSelectManager().init();
   new MediaViewer().init();
   new ProjectDownloads().init();
+  new BackToTop().init();
   new RevealOnScroll('.page-title, .subtitle, .section, .row, .portrait, .project-card').init();
   cleanupLegacyServiceWorker();
 });
