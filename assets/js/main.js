@@ -427,20 +427,38 @@ class MediaViewer {
     this.image = document.querySelector('#imgModalImg');
     this.frame = document.querySelector('#imgModalFrame');
     this.lastTrigger = null;
+    this.galleryItems = [];
+    this.currentIndex = -1;
+    this.touchStartX = null;
 
     this.onClick = this.onClick.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
+    this.onTouchStart = this.onTouchStart.bind(this);
+    this.onTouchEnd = this.onTouchEnd.bind(this);
   }
 
   init() {
     if (!this.modal || !this.image || !this.frame) return;
+    this.createNavigation();
     document.addEventListener('click', this.onClick);
     document.addEventListener('keydown', this.onKeyDown);
+    this.modal.addEventListener('touchstart', this.onTouchStart, { passive: true });
+    this.modal.addEventListener('touchend', this.onTouchEnd, { passive: true });
   }
 
   open(src, trigger) {
     if (!src) return;
     this.lastTrigger = trigger;
+    this.galleryItems = this.getGalleryItems(trigger);
+    this.currentIndex = this.galleryItems.findIndex((item) => item.trigger === trigger);
+    this.showMedia(src, trigger);
+
+    this.modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('no-scroll');
+    this.modal.querySelector('[data-modal-close]')?.focus();
+  }
+
+  showMedia(src, trigger) {
     const isPdf = this.isPdf(src);
     this.modal.classList.toggle('img-modal--pdf', isPdf);
 
@@ -453,12 +471,11 @@ class MediaViewer {
       this.frame.removeAttribute('src');
       this.frame.hidden = true;
       this.image.src = src;
+      this.image.alt = trigger?.querySelector('img')?.alt || 'Документ';
       this.image.hidden = false;
     }
 
-    this.modal.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('no-scroll');
-    this.modal.querySelector('[data-modal-close]')?.focus();
+    this.updateNavigation();
   }
 
   close() {
@@ -472,6 +489,72 @@ class MediaViewer {
     document.body.classList.remove('no-scroll');
     this.lastTrigger?.focus();
     this.lastTrigger = null;
+    this.galleryItems = [];
+    this.currentIndex = -1;
+    this.touchStartX = null;
+  }
+
+  createNavigation() {
+    const dialog = this.modal.querySelector('.img-modal__dialog');
+    if (!dialog || dialog.querySelector('[data-modal-direction]')) return;
+
+    const close = dialog.querySelector('[data-modal-close]');
+    if (close) {
+      close.innerHTML = '<span class="img-modal__icon img-modal__icon--close" aria-hidden="true"></span>';
+    }
+
+    const arrowIcon = '<span class="img-modal__icon img-modal__icon--arrow" aria-hidden="true"></span>';
+
+    const previous = document.createElement('button');
+    previous.className = 'img-modal__nav img-modal__nav--previous';
+    previous.type = 'button';
+    previous.dataset.modalDirection = 'previous';
+    previous.setAttribute('aria-label', 'Предыдущая награда');
+    previous.innerHTML = arrowIcon;
+
+    const next = document.createElement('button');
+    next.className = 'img-modal__nav img-modal__nav--next';
+    next.type = 'button';
+    next.dataset.modalDirection = 'next';
+    next.setAttribute('aria-label', 'Следующая награда');
+    next.innerHTML = arrowIcon;
+
+    const counter = document.createElement('div');
+    counter.className = 'img-modal__counter';
+    counter.dataset.modalCounter = '';
+    counter.setAttribute('aria-live', 'polite');
+
+    dialog.append(previous, next, counter);
+  }
+
+  getGalleryItems(trigger) {
+    const gallery = trigger?.closest('[data-auto-gallery]');
+    if (!gallery) return [];
+
+    return Array.from(gallery.querySelectorAll('[data-img]'))
+      .map((itemTrigger) => ({ src: itemTrigger.dataset.img, trigger: itemTrigger }))
+      .filter((item) => item.src);
+  }
+
+  updateNavigation() {
+    const hasMultipleItems = this.galleryItems.length > 1 && this.currentIndex >= 0;
+    this.modal.querySelectorAll('[data-modal-direction]').forEach((button) => {
+      button.hidden = !hasMultipleItems;
+    });
+
+    const counter = this.modal.querySelector('[data-modal-counter]');
+    if (!counter) return;
+    counter.hidden = !hasMultipleItems;
+    counter.textContent = hasMultipleItems
+      ? `${this.currentIndex + 1} / ${this.galleryItems.length}`
+      : '';
+  }
+
+  navigate(step) {
+    if (this.galleryItems.length < 2 || this.currentIndex < 0) return;
+    this.currentIndex = (this.currentIndex + step + this.galleryItems.length) % this.galleryItems.length;
+    const item = this.galleryItems[this.currentIndex];
+    this.showMedia(item.src, item.trigger);
   }
 
   isPdf(src) {
@@ -498,6 +581,15 @@ class MediaViewer {
   }
 
   onClick(event) {
+    const navigationButton = event.target instanceof Element
+      ? event.target.closest('[data-modal-direction]')
+      : null;
+    if (navigationButton) {
+      event.preventDefault();
+      this.navigate(navigationButton.dataset.modalDirection === 'next' ? 1 : -1);
+      return;
+    }
+
     const closeButton = event.target instanceof Element
       ? event.target.closest('[data-modal-close]')
       : null;
@@ -518,12 +610,30 @@ class MediaViewer {
       this.close();
       return;
     }
+    if (this.modal.getAttribute('aria-hidden') === 'false' && ['ArrowLeft', 'ArrowRight'].includes(event.key)) {
+      event.preventDefault();
+      this.navigate(event.key === 'ArrowRight' ? 1 : -1);
+      return;
+    }
     if (!['Enter', ' '].includes(event.key)) return;
 
     const trigger = this.getTrigger(event.target);
     if (!trigger) return;
     event.preventDefault();
     this.open(trigger.dataset.img, trigger);
+  }
+
+  onTouchStart(event) {
+    if (this.modal.getAttribute('aria-hidden') !== 'false' || event.touches.length !== 1) return;
+    this.touchStartX = event.touches[0].clientX;
+  }
+
+  onTouchEnd(event) {
+    if (this.touchStartX === null || event.changedTouches.length !== 1) return;
+    const distance = event.changedTouches[0].clientX - this.touchStartX;
+    this.touchStartX = null;
+    if (Math.abs(distance) < 50) return;
+    this.navigate(distance < 0 ? 1 : -1);
   }
 }
 
@@ -586,36 +696,67 @@ class AchievementGallery {
     const controls = {
       category: root.querySelector('[data-gallery-category]'),
       academicYear: root.querySelector('[data-gallery-academic-year]'),
-      sort: root.querySelector('[data-gallery-sort]'),
+      sortButtons: Array.from(root.querySelectorAll('[data-gallery-sort-field]')),
+      sortValue: '',
       from: root.querySelector('[data-gallery-from]'),
       to: root.querySelector('[data-gallery-to]'),
       clear: root.querySelector('[data-gallery-clear]'),
     };
-    return Object.values(controls).every(Boolean) ? controls : null;
+    return controls.category && controls.academicYear && controls.sortButtons.length
+      && controls.from && controls.to && controls.clear ? controls : null;
   }
 
   bindControls(gallery, controls, config) {
     controls.category.value = config.defaultCategory;
     controls.academicYear.value = 'all';
-    controls.sort.value = config.defaultSort;
+    controls.sortValue = config.defaultSort;
     controls.category.dispatchEvent(new Event('themed-select-sync'));
     controls.academicYear.dispatchEvent(new Event('themed-select-sync'));
-    controls.sort.dispatchEvent(new Event('themed-select-sync'));
+    this.updateSortButtons(controls);
 
-    [controls.category, controls.academicYear, controls.sort, controls.from, controls.to].forEach((control) => {
+    [controls.category, controls.academicYear, controls.from, controls.to].forEach((control) => {
       control.addEventListener('change', () => this.render(gallery));
+    });
+
+    controls.sortButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const field = button.dataset.gallerySortField;
+        const [activeField, activeDirection] = this.normalizeSort(controls.sortValue).split('-');
+        const direction = activeField === field
+          ? (activeDirection === 'asc' ? 'desc' : 'asc')
+          : (field === 'date' ? 'desc' : 'asc');
+        controls.sortValue = this.normalizeSort(`${field}-${direction}`);
+        this.updateSortButtons(controls);
+        this.render(gallery);
+      });
     });
 
     controls.clear.addEventListener('click', () => {
       controls.category.value = config.defaultCategory;
       controls.academicYear.value = 'all';
-      controls.sort.value = config.defaultSort;
+      controls.sortValue = config.defaultSort;
       controls.from.value = '';
       controls.to.value = '';
       controls.category.dispatchEvent(new Event('themed-select-sync'));
       controls.academicYear.dispatchEvent(new Event('themed-select-sync'));
-      controls.sort.dispatchEvent(new Event('themed-select-sync'));
+      this.updateSortButtons(controls);
       this.render(gallery);
+    });
+  }
+
+  updateSortButtons(controls) {
+    const [activeField, activeDirection] = this.normalizeSort(controls.sortValue).split('-');
+    controls.sortButtons.forEach((button) => {
+      const field = button.dataset.gallerySortField;
+      const isActive = field === activeField;
+      const direction = button.querySelector('.gallery-sort-column__direction');
+      const label = field === 'date' ? 'дате' : 'имени';
+      button.classList.toggle('is-active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+      button.setAttribute('aria-label', isActive
+        ? `Сортировка по ${label}, ${activeDirection === 'desc' ? 'по убыванию' : 'по возрастанию'}. Изменить направление`
+        : `Сортировать по ${label}`);
+      if (direction) direction.textContent = isActive ? (activeDirection === 'desc' ? '↓' : '↑') : '↕';
     });
   }
 
@@ -712,7 +853,7 @@ class AchievementGallery {
       });
     }
 
-    items = this.sortItems(items, controls.sort.value);
+    items = this.sortItems(items, controls.sortValue);
     if (!items.length) {
       this.renderStatus(gallery, from || to
         ? 'Нет наград в выбранном диапазоне.'
