@@ -1,386 +1,223 @@
-﻿/**
- * Основной клиентский скрипт сайта.
- * Здесь собрана логика темы, навигации, анимаций, галереи и модальных окон.
- */
-
 /**
- * Программно скачивает файл, даже если браузер предпочитает открыть его во вкладке.
- * Сначала пробуем загрузить файл через fetch и сохранить как blob,
- * а если это не удалось — откатываемся к обычной ссылке с download.
- *
- * @param {string} src
- * @param {string} fileName
+ * Основной клиентский код сайта.
+ * Компоненты запускаются только на тех страницах, где есть нужная разметка.
  */
-const EMBEDDED_GALLERY_MANIFESTS = {
-  'students-manifest.json': [
-    'content/achievements/students/certificates/2025-undated_1.webp',
-    'content/achievements/students/certificates/2025-undated_2.webp',
-    'content/achievements/students/certificates/2025-03-20_3.webp',
-    'content/achievements/students/diplomas/2025-undated_4.webp',
-    'content/achievements/students/diplomas/2025-05-30_5.webp',
-    'content/achievements/students/diplomas/2025-05-30_6.webp',
-    'content/achievements/students/diplomas/2025-undated_7.webp',
-    'content/achievements/students/diplomas/2025-12-26_8.webp',
-    'content/achievements/students/diplomas/2026-undated_9.webp',
-    'content/achievements/students/diplomas/2026-undated_10.webp',
-    'content/achievements/students/diplomas/2026-undated_11.webp',
-    'content/achievements/students/diplomas/2026-undated_12.webp',
-    'content/achievements/students/diplomas/2026-undated_13.webp',
-    'content/achievements/students/diplomas/2026-undated_14.webp',
-    'content/achievements/students/diplomas/2026-undated_15.webp',
-    'content/achievements/students/diplomas/2026-undated_16.webp',
-    'content/achievements/students/diplomas/2026-undated_17.webp',
-    'content/achievements/students/certificates/2026-04-18_18.webp',
-    'content/achievements/students/certificates/2026-04-18_19.webp',
-    'content/achievements/students/certificates/2026-04-18_20.webp',
-  ],
-  'teacher-manifest.json': [
-    'content/achievements/teacher/certificates/2025-undated_1.webp',
-    'content/achievements/teacher/certificates/2025-10-07_2.webp',
-    'content/achievements/teacher/certificates/2025-10-07_3.webp',
-    'content/achievements/teacher/diplomas/2025-undated_4.webp',
-    'content/achievements/teacher/certificates/2025-05-22_5.webp',
-    'content/achievements/teacher/diplomas/2025-undated_6.webp',
-    'content/achievements/teacher/gratitude/2025-03-20_7.webp',
-    'content/achievements/teacher/gratitude/2025-undated_8.webp',
-    'content/achievements/teacher/gratitude/2025-05-30_9.webp',
-    'content/achievements/teacher/certificates/2025-11-14_10.webp',
-    'content/achievements/teacher/gratitude/2025-undated_11.webp',
-    'content/achievements/teacher/certificates/2025-12-26_12.webp',
-    'content/achievements/teacher/certificates/2025-12-26_13.webp',
-    'content/achievements/teacher/gratitude/2026-undated_14.webp',
-    'content/achievements/teacher/certificates/2026-01-16_15.webp',
-    'content/achievements/teacher/gratitude/2025-12-26_16.webp',
-    'content/achievements/teacher/certificates/2024-12-25_17.webp',
-    'content/achievements/teacher/gratitude/2026-undated_18.webp',
-    'content/achievements/teacher/gratitude/2026-undated_19.webp',
-    'content/achievements/teacher/gratitude/2026-03-19_20.webp',
-    'content/achievements/teacher/gratitude/2026-04-18_21.webp',
-    'content/achievements/teacher/gratitude/2026-undated_22.webp',
-  ],
-};
 
-async function forceDownloadFile(src, fileName) {
+const GALLERY_FILE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif', 'pdf']);
+
+// Каталоги хранят относительные пути, поэтому работают и через сервер, и при открытии HTML с диска.
+const ACHIEVEMENT_FILES = Object.freeze({
+  teacher: [
+    'certificates/2025-undated_1.webp',
+    'certificates/2025-10-07_2.webp',
+    'certificates/2025-10-07_3.webp',
+    'diplomas/2025-undated_4.webp',
+    'certificates/2025-05-22_5.webp',
+    'diplomas/2025-undated_6.webp',
+    'gratitude/2025-03-20_7.webp',
+    'gratitude/2025-undated_8.webp',
+    'gratitude/2025-05-30_9.webp',
+    'certificates/2025-11-14_10.webp',
+    'gratitude/2025-undated_11.webp',
+    'certificates/2025-12-26_12.webp',
+    'certificates/2025-12-26_13.webp',
+    'gratitude/2026-undated_14.webp',
+    'certificates/2026-01-16_15.webp',
+    'gratitude/2025-12-26_16.webp',
+    'certificates/2024-12-25_17.webp',
+    'gratitude/2026-undated_18.webp',
+    'gratitude/2026-undated_19.webp',
+    'gratitude/2026-03-19_20.webp',
+    'gratitude/2026-04-18_21.webp',
+    'gratitude/2026-undated_22.webp',
+  ],
+  students: [
+    'certificates/2025-undated_1.webp',
+    'certificates/2025-undated_2.webp',
+    'certificates/2025-03-20_3.webp',
+    'diplomas/2025-undated_4.webp',
+    'diplomas/2025-05-30_5.webp',
+    'diplomas/2025-05-30_6.webp',
+    'diplomas/2025-undated_7.webp',
+    'diplomas/2025-12-26_8.webp',
+    'diplomas/2026-undated_9.webp',
+    'diplomas/2026-undated_10.webp',
+    'diplomas/2026-undated_11.webp',
+    'diplomas/2026-undated_12.webp',
+    'diplomas/2026-undated_13.webp',
+    'diplomas/2026-undated_14.webp',
+    'diplomas/2026-undated_15.webp',
+    'diplomas/2026-undated_16.webp',
+    'diplomas/2026-undated_17.webp',
+    'certificates/2026-04-18_18.webp',
+    'certificates/2026-04-18_19.webp',
+    'certificates/2026-04-18_20.webp',
+  ],
+});
+
+// Скачиваем файл через Blob, чтобы браузер не открывал ZIP или PDF в новой вкладке.
+// Если загрузка недоступна, оставляем браузеру обычную ссылку с атрибутом download.
+async function downloadFile(src, fileName) {
   if (!src) return;
 
   try {
     const response = await fetch(src);
     if (!response.ok) throw new Error(`Download failed: ${response.status}`);
 
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
-
+    const blobUrl = URL.createObjectURL(await response.blob());
     const link = document.createElement('a');
     link.href = blobUrl;
     link.download = fileName || 'file';
     document.body.appendChild(link);
     link.click();
     link.remove();
-
     URL.revokeObjectURL(blobUrl);
-  } catch (error) {
-    const fallbackLink = document.createElement('a');
-    fallbackLink.href = src;
-    fallbackLink.download = fileName || 'file';
-    document.body.appendChild(fallbackLink);
-    fallbackLink.click();
-    fallbackLink.remove();
+  } catch {
+    const link = document.createElement('a');
+    link.href = src;
+    link.download = fileName || 'file';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   }
 }
 
-/**
- * Возвращает русскую форму слова по числу.
- * @param {number} value
- * @param {string[]} forms
- */
+// Возвращает правильную форму русского слова для переданного числа.
 function pluralizeRu(value, forms) {
-  const abs = Math.abs(value);
-  const mod10 = abs % 10;
-  const mod100 = abs % 100;
+  const number = Math.abs(value);
+  const mod10 = number % 10;
+  const mod100 = number % 100;
 
   if (mod10 === 1 && mod100 !== 11) return forms[0];
   if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return forms[1];
   return forms[2];
 }
 
-/**
- * Считает стаж от даты начала до сегодняшнего дня.
- * @param {string} startDate
- * @param {Date} [endDate]
- */
+// Считает полный педагогический стаж в годах и месяцах.
+// При некорректной или будущей дате возвращает пустую строку.
 function formatTeachingExperience(startDate, endDate = new Date()) {
   const start = new Date(`${startDate}T00:00:00`);
-  if (Number.isNaN(start.getTime())) return '';
+  if (Number.isNaN(start.getTime()) || start > endDate) return '';
 
   let years = endDate.getFullYear() - start.getFullYear();
   let months = endDate.getMonth() - start.getMonth();
 
-  if (endDate.getDate() < start.getDate()) {
-    months -= 1;
-  }
-
+  if (endDate.getDate() < start.getDate()) months -= 1;
   if (months < 0) {
     years -= 1;
     months += 12;
   }
 
-  if (years < 0) return '';
   if (years === 0 && months === 0) return 'менее месяца';
 
   const parts = [];
-  if (years > 0) {
-    parts.push(`${years} ${pluralizeRu(years, ['год', 'года', 'лет'])}`);
-  }
-  if (months > 0) {
-    parts.push(`${months} ${pluralizeRu(months, ['месяц', 'месяца', 'месяцев'])}`);
-  }
-
+  if (years > 0) parts.push(`${years} ${pluralizeRu(years, ['год', 'года', 'лет'])}`);
+  if (months > 0) parts.push(`${months} ${pluralizeRu(months, ['месяц', 'месяца', 'месяцев'])}`);
   return parts.join(' ');
 }
 
-/**
- * Автоматически подставляет педагогический стаж на главной странице.
- */
-function initTeachingExperience() {
-  const item = Array.from(document.querySelectorAll('.factlist li')).find((li) =>
-    li.textContent.includes('Педагогический стаж:')
-  );
-
+// Обновляет стаж на главной странице. На остальных страницах функция ничего не делает.
+function updateTeachingExperience() {
+  const item = document.querySelector('[data-teaching-experience]');
   if (!item) return;
 
-  const experience = formatTeachingExperience('2024-08-26');
-  if (!experience) return;
-
-  item.innerHTML = `<b>Педагогический стаж:</b> ${experience}`;
+  const experience = formatTeachingExperience(item.dataset.teachingExperience);
+  if (experience) item.textContent = experience;
 }
 
 /**
- * Управляет мобильным меню в шапке сайта.
+ * Управляет мобильной навигацией и меню достижений.
+ * Закрывает открытые панели по клику снаружи и по клавише Escape.
  */
-class MobileMenu {
-  /**
-   * @param {{burgerSelector:string, navSelector:string}} opts
-   */
-  constructor(opts) {
-    this.burger = document.querySelector(opts.burgerSelector);
-    this.nav = document.querySelector(opts.navSelector);
-
-    this.onBurgerClick = this.onBurgerClick.bind(this);
-    this.onNavClick = this.onNavClick.bind(this);
-    this.onDocClick = this.onDocClick.bind(this);
-  }
-
-  /**
-   * @param {HTMLElement} gallery
-   * @returns {string}
-   */
-  /**
-   * Подключает обработчики, если нужные элементы есть на странице.
-   */
-  init() {
-    if (!this.burger || !this.nav) return;
-
-    this.burger.addEventListener('click', this.onBurgerClick);
-    this.nav.addEventListener('click', this.onNavClick);
-    document.addEventListener('click', this.onDocClick);
-  }
-
-  /**
-   * @returns {boolean}
-   */
-  isOpen() {
-    return this.nav.classList.contains('open');
-  }
-
-  /**
-   * Открывает меню и обновляет aria-состояние.
-   */
-  open() {
-    this.nav.classList.add('open');
-    this.burger.setAttribute('aria-expanded', 'true');
-  }
-
-  /**
-   * Закрывает меню и обновляет aria-состояние.
-   */
-  close() {
-    this.nav.classList.remove('open');
-    this.burger.setAttribute('aria-expanded', 'false');
-  }
-
-  /**
-   * Переключает состояние меню.
-   */
-  toggle() {
-    this.isOpen() ? this.close() : this.open();
-  }
-
-  /**
-   * Обрабатывает клик по бургер-кнопке.
-   * @param {MouseEvent} e
-   */
-  onBurgerClick(e) {
-    e.preventDefault();
-    this.toggle();
-  }
-
-  /**
-   * Закрывает мобильное меню после перехода по ссылке.
-   * @param {MouseEvent} e
-   */
-  onNavClick(e) {
-    const link = e.target && e.target.closest && e.target.closest('a');
-    if (link && this.isOpen()) this.close();
-  }
-
-  /**
-   * Закрывает меню по клику вне шапки.
-   * @param {MouseEvent} e
-   */
-  onDocClick(e) {
-    if (!this.isOpen()) return;
-
-    const inside = this.nav.contains(e.target) || this.burger.contains(e.target);
-    if (!inside) this.close();
-  }
-}
-
-/**
- * Управляет одним выпадающим меню.
- */
-class Dropdown {
-  /**
-   * @param {{root:Element}} opts
-   */
-  constructor(opts) {
-    this.root = opts.root;
-    this.button = this.root.querySelector('[data-dropdown-btn]');
-    this.onButtonClick = this.onButtonClick.bind(this);
-  }
-
-  /**
-   * Подключает обработчик к кнопке.
-   */
-  init() {
-    if (!this.root || !this.button) return;
-    this.button.addEventListener('click', this.onButtonClick);
-  }
-
-  /**
-   * @returns {boolean}
-   */
-  isOpen() {
-    return this.root.classList.contains('open');
-  }
-
-  /**
-   * Открывает выпадающее меню.
-   */
-  open() {
-    this.root.classList.add('open');
-    this.button.setAttribute('aria-expanded', 'true');
-  }
-
-  /**
-   * Закрывает выпадающее меню.
-   */
-  close() {
-    this.root.classList.remove('open');
-    this.button.setAttribute('aria-expanded', 'false');
-  }
-
-  /**
-   * Переключает состояние меню.
-   */
-  toggle() {
-    this.isOpen() ? this.close() : this.open();
-  }
-
-  /**
-   * @param {MouseEvent} e
-   */
-  onButtonClick(e) {
-    e.preventDefault();
-    this.toggle();
-  }
-}
-
-/**
- * Управляет всеми выпадающими меню на странице.
- */
-class DropdownManager {
+class Navigation {
   constructor() {
-    this.dropdowns = [];
+    this.burger = document.querySelector('[data-burger]');
+    this.nav = document.querySelector('[data-nav]');
+    this.dropdown = document.querySelector('[data-dropdown]');
+    this.dropdownButton = this.dropdown?.querySelector('[data-dropdown-btn]') || null;
 
-    this.onDocClick = this.onDocClick.bind(this);
+    this.onDocumentClick = this.onDocumentClick.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
   }
 
-  /**
-   * Инициализирует все найденные dropdown-компоненты.
-   */
   init() {
-    const roots = Array.from(document.querySelectorAll('[data-dropdown]'));
-    this.dropdowns = roots.map((root) => new Dropdown({ root }));
-    this.dropdowns.forEach((dropdown) => dropdown.init());
+    if (this.burger && this.nav) {
+      this.burger.addEventListener('click', () => this.toggleNavigation());
+      this.nav.addEventListener('click', (event) => {
+        if (event.target instanceof Element && event.target.closest('a')) this.closeNavigation();
+      });
+    }
 
-    if (this.dropdowns.length) {
-      document.addEventListener('click', this.onDocClick);
+    this.dropdownButton?.addEventListener('click', (event) => {
+      event.preventDefault();
+      this.toggleDropdown();
+    });
+
+    if (this.nav || this.dropdown) {
+      document.addEventListener('click', this.onDocumentClick);
       document.addEventListener('keydown', this.onKeyDown);
     }
   }
 
-  /**
-   * Закрывает все выпадающие меню.
-   */
-  closeAll() {
-    this.dropdowns.forEach((dropdown) => dropdown.close());
+  toggleNavigation() {
+    const isOpen = this.nav.classList.toggle('open');
+    this.burger.setAttribute('aria-expanded', String(isOpen));
   }
 
-  /**
-   * Закрывает меню при клике вне dropdown-области.
-   * @param {MouseEvent} e
-   */
-  onDocClick(e) {
-    const clickedInside = this.dropdowns.some((dropdown) => dropdown.root.contains(e.target));
-    if (!clickedInside) this.closeAll();
+  closeNavigation() {
+    if (!this.nav || !this.burger) return;
+    this.nav.classList.remove('open');
+    this.burger.setAttribute('aria-expanded', 'false');
   }
 
-  /**
-   * Закрывает меню по Escape.
-   * @param {KeyboardEvent} e
-   */
-  onKeyDown(e) {
-    if (e.key === 'Escape') this.closeAll();
+  toggleDropdown() {
+    if (!this.dropdown || !this.dropdownButton) return;
+    const isOpen = this.dropdown.classList.toggle('open');
+    this.dropdownButton.setAttribute('aria-expanded', String(isOpen));
+  }
+
+  closeDropdown() {
+    if (!this.dropdown || !this.dropdownButton) return;
+    this.dropdown.classList.remove('open');
+    this.dropdownButton.setAttribute('aria-expanded', 'false');
+  }
+
+  onDocumentClick(event) {
+    if (this.nav && this.burger && !this.nav.contains(event.target) && !this.burger.contains(event.target)) {
+      this.closeNavigation();
+    }
+    if (this.dropdown && !this.dropdown.contains(event.target)) this.closeDropdown();
+  }
+
+  onKeyDown(event) {
+    if (event.key !== 'Escape') return;
+    this.closeNavigation();
+    this.closeDropdown();
   }
 }
 
 /**
- * Визуальная оболочка над нативным select в стиле сайта.
- * Исходный элемент остаётся источником значения для фильтров галереи.
+ * Заменяет внешний вид системного select, но сохраняет исходный элемент.
+ * Нативное значение остаётся доступным фильтрам и меняется через событие change.
  */
 class ThemedSelect {
-  /**
-   * @param {{select:HTMLSelectElement,onOpen:(current:ThemedSelect)=>void}} opts
-   */
-  constructor(opts) {
-    this.select = opts.select;
-    this.onOpen = opts.onOpen;
+  static nextId = 1;
+
+  constructor(select, onOpen) {
+    this.select = select;
+    this.onOpen = onOpen;
     this.root = null;
     this.button = null;
     this.value = null;
     this.list = null;
     this.options = [];
 
-    this.onButtonClick = this.onButtonClick.bind(this);
-    this.onButtonKeyDown = this.onButtonKeyDown.bind(this);
-    this.onListClick = this.onListClick.bind(this);
+    this.sync = this.sync.bind(this);
     this.onListKeyDown = this.onListKeyDown.bind(this);
-    this.syncFromNative = this.syncFromNative.bind(this);
   }
 
   init() {
-    if (!this.select || this.select.dataset.themedSelectReady === 'true') return;
+    if (this.select.dataset.themedSelectReady === 'true') return;
 
     const id = `themed-select-${ThemedSelect.nextId++}`;
     this.root = document.createElement('div');
@@ -393,6 +230,7 @@ class ThemedSelect {
     this.button.setAttribute('aria-haspopup', 'listbox');
     this.button.setAttribute('aria-expanded', 'false');
     this.button.setAttribute('aria-controls', `${id}-list`);
+    this.button.setAttribute('aria-label', this.select.getAttribute('aria-label') || 'Выбор значения');
 
     this.value = document.createElement('span');
     this.value.className = 'themed-select__value';
@@ -405,11 +243,11 @@ class ThemedSelect {
     this.list = document.createElement('div');
     this.list.id = `${id}-list`;
     this.list.className = 'themed-select__list';
-    this.list.setAttribute('role', 'listbox');
-    this.list.setAttribute('aria-labelledby', `${id}-button`);
     this.list.hidden = true;
+    this.list.setAttribute('role', 'listbox');
+    this.list.setAttribute('aria-labelledby', this.button.id);
 
-    Array.from(this.select.options).forEach((nativeOption) => {
+    this.options = Array.from(this.select.options).map((nativeOption) => {
       const option = document.createElement('button');
       option.type = 'button';
       option.className = 'themed-select__option';
@@ -418,7 +256,7 @@ class ThemedSelect {
       option.setAttribute('role', 'option');
       option.setAttribute('aria-selected', 'false');
       this.list.appendChild(option);
-      this.options.push(option);
+      return option;
     });
 
     this.root.append(this.button, this.list);
@@ -428,48 +266,49 @@ class ThemedSelect {
     this.select.setAttribute('aria-hidden', 'true');
     this.select.dataset.themedSelectReady = 'true';
 
-    this.button.addEventListener('click', this.onButtonClick);
-    this.button.addEventListener('keydown', this.onButtonKeyDown);
-    this.list.addEventListener('click', this.onListClick);
+    this.button.addEventListener('click', (event) => {
+      event.preventDefault();
+      this.isOpen() ? this.close() : this.open();
+    });
+    this.button.addEventListener('keydown', (event) => {
+      if (!['ArrowDown', 'ArrowUp'].includes(event.key)) return;
+      event.preventDefault();
+      this.open(true);
+    });
+    this.list.addEventListener('click', (event) => {
+      const option = event.target instanceof Element
+        ? event.target.closest('.themed-select__option')
+        : null;
+      if (option) this.choose(option);
+    });
     this.list.addEventListener('keydown', this.onListKeyDown);
-    this.select.addEventListener('change', this.syncFromNative);
-    this.select.addEventListener('themed-select-sync', this.syncFromNative);
-    this.syncFromNative();
+    this.select.addEventListener('change', this.sync);
+    this.select.addEventListener('themed-select-sync', this.sync);
+    this.sync();
   }
 
   isOpen() {
-    return this.root?.classList.contains('is-open') || false;
+    return this.root.classList.contains('is-open');
   }
 
-  open({ focusOption = false } = {}) {
-    if (!this.root || !this.list || !this.button) return;
+  open(focusOption = false) {
     this.onOpen(this);
     this.root.classList.add('is-open');
     this.list.hidden = false;
     this.button.setAttribute('aria-expanded', 'true');
-
-    if (focusOption) {
-      (this.getSelectedOption() || this.options[0])?.focus();
-    }
+    if (focusOption) (this.getSelectedOption() || this.options[0])?.focus();
   }
 
-  close({ restoreFocus = false } = {}) {
-    if (!this.root || !this.list || !this.button) return;
+  close(restoreFocus = false) {
     this.root.classList.remove('is-open');
     this.list.hidden = true;
     this.button.setAttribute('aria-expanded', 'false');
     if (restoreFocus) this.button.focus();
   }
 
-  toggle() {
-    this.isOpen() ? this.close() : this.open();
-  }
-
-  syncFromNative() {
-    if (!this.select || !this.value) return;
+  sync() {
     const selected = this.select.selectedOptions[0];
     this.value.textContent = selected?.textContent || '';
-
     this.options.forEach((option) => {
       const isSelected = option.dataset.value === this.select.value;
       option.classList.toggle('is-selected', isSelected);
@@ -477,1790 +316,516 @@ class ThemedSelect {
     });
   }
 
+  choose(option) {
+    this.select.value = option.dataset.value || '';
+    this.sync();
+    this.select.dispatchEvent(new Event('change', { bubbles: true }));
+    this.close(true);
+  }
+
   getSelectedOption() {
     return this.options.find((option) => option.dataset.value === this.select.value) || null;
   }
 
-  selectOption(option) {
-    if (!option) return;
-    this.select.value = option.dataset.value || '';
-    this.syncFromNative();
-    this.select.dispatchEvent(new Event('change', { bubbles: true }));
-    this.close({ restoreFocus: true });
-  }
-
   moveFocus(current, step) {
     const index = Math.max(0, this.options.indexOf(current));
-    const nextIndex = (index + step + this.options.length) % this.options.length;
-    this.options[nextIndex]?.focus();
+    this.options[(index + step + this.options.length) % this.options.length]?.focus();
   }
 
-  onButtonClick(e) {
-    e.preventDefault();
-    this.toggle();
-  }
-
-  onButtonKeyDown(e) {
-    if (!['ArrowDown', 'ArrowUp'].includes(e.key)) return;
-    e.preventDefault();
-    this.open({ focusOption: true });
-  }
-
-  onListClick(e) {
-    const option = e.target?.closest?.('.themed-select__option');
-    if (option) this.selectOption(option);
-  }
-
-  onListKeyDown(e) {
-    const option = e.target?.closest?.('.themed-select__option');
+  onListKeyDown(event) {
+    const option = event.target instanceof Element
+      ? event.target.closest('.themed-select__option')
+      : null;
     if (!option) return;
 
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      this.moveFocus(option, e.key === 'ArrowDown' ? 1 : -1);
-      return;
-    }
-
-    if (e.key === 'Home' || e.key === 'End') {
-      e.preventDefault();
-      this.options[e.key === 'Home' ? 0 : this.options.length - 1]?.focus();
-      return;
-    }
-
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      this.selectOption(option);
-      return;
-    }
-
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      this.close({ restoreFocus: true });
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.moveFocus(option, event.key === 'ArrowDown' ? 1 : -1);
+    } else if (event.key === 'Home' || event.key === 'End') {
+      event.preventDefault();
+      this.options[event.key === 'Home' ? 0 : this.options.length - 1]?.focus();
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.choose(option);
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      this.close(true);
     }
   }
 }
 
-ThemedSelect.nextId = 1;
-
+// Создаёт стилизованные списки и следит, чтобы одновременно был открыт только один.
 class ThemedSelectManager {
   constructor() {
-    this.selects = [];
+    this.items = [];
     this.onDocumentClick = this.onDocumentClick.bind(this);
   }
 
   init() {
-    const nativeSelects = Array.from(document.querySelectorAll('.gallery-controls select'));
-    this.selects = nativeSelects.map((select) => new ThemedSelect({
-      select,
-      onOpen: (current) => this.closeAll(current),
-    }));
-    this.selects.forEach((select) => select.init());
-
-    if (this.selects.length) {
-      document.addEventListener('click', this.onDocumentClick);
-    }
+    this.items = Array.from(document.querySelectorAll('.gallery-controls select'))
+      .map((select) => new ThemedSelect(select, (current) => this.closeAll(current)));
+    this.items.forEach((item) => item.init());
+    if (this.items.length) document.addEventListener('click', this.onDocumentClick);
   }
 
   closeAll(except = null) {
-    this.selects.forEach((select) => {
-      if (select !== except) select.close();
+    this.items.forEach((item) => {
+      if (item !== except) item.close();
     });
   }
 
-  onDocumentClick(e) {
-    const clickedInside = this.selects.some((select) => select.root?.contains(e.target));
-    if (!clickedInside) this.closeAll();
+  onDocumentClick(event) {
+    if (!this.items.some((item) => item.root.contains(event.target))) this.closeAll();
   }
 }
 
 /**
- * Плавно показывает элементы при появлении в зоне видимости.
+ * Добавляет мягкое появление видимых элементов.
+ * При отключённой анимации или без IntersectionObserver контент показывается сразу.
  */
 class RevealOnScroll {
-  /**
-   * @param {{
-   *   selectors:string,
-   *   maxDelayMs?:number,
-   *   stepDelayMs?:number
-   * }} opts
-   */
-  constructor(opts) {
-    this.selectors = opts.selectors;
-    this.maxDelayMs = opts.maxDelayMs ?? 300;
-    this.stepDelayMs = opts.stepDelayMs ?? 60;
-    this.observer = null;
+  constructor(selector) {
+    this.selector = selector;
   }
 
-  /**
-   * Инициализирует анимацию появления.
-   */
   init() {
-    const targets = Array.from(document.querySelectorAll(this.selectors));
-    if (!targets.length) return;
+    const elements = Array.from(document.querySelectorAll(this.selector));
+    if (!elements.length) return;
 
-    targets.forEach((el, idx) => {
-      el.classList.add('reveal');
-      const delay = Math.min(idx * this.stepDelayMs, this.maxDelayMs);
-      el.style.transitionDelay = `${delay}ms`;
+    elements.forEach((element, index) => {
+      element.classList.add('reveal');
+      element.style.transitionDelay = `${Math.min(index * 60, 300)}ms`;
     });
 
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced) {
-      targets.forEach((el) => el.classList.add('is-visible'));
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      elements.forEach((element) => element.classList.add('is-visible'));
       return;
     }
 
-    this.observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            this.observer.unobserve(entry.target);
-          }
-        }
-      },
-      {
-        rootMargin: '0px 0px -10% 0px',
-        threshold: 0.1,
-      }
-    );
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -10%', threshold: 0.1 });
 
-    targets.forEach((el) => this.observer.observe(el));
+    elements.forEach((element) => observer.observe(element));
   }
 }
 
 /**
- * Базовая логика для модального окна с изображением или PDF.
- * Используется и для портретного фото, и для документов.
+ * Показывает изображения и PDF в одном модальном окне.
+ * Источником служит любой элемент с атрибутом data-img.
  */
-class MediaModal {
-  /**
-   * @param {{
-   *   modalSelector:string,
-   *   modalImgSelector:string,
-   *   modalFrameSelector?:string,
-   *   closeBtnSelector:string,
-   *   downloadLinkSelector?:string
-   * }} opts
-   */
-  constructor(opts) {
-    this.modal = document.querySelector(opts.modalSelector);
-    this.modalImg = document.querySelector(opts.modalImgSelector);
-    this.modalFrame = opts.modalFrameSelector
-      ? document.querySelector(opts.modalFrameSelector)
-      : null;
-    this.closeBtn = opts.closeBtnSelector
-      ? document.querySelector(opts.closeBtnSelector)
-      : null;
-    this.downloadLink = opts.downloadLinkSelector
-      ? document.querySelector(opts.downloadLinkSelector)
-      : null;
+class MediaViewer {
+  constructor() {
+    this.modal = document.querySelector('#imgModal');
+    this.image = document.querySelector('#imgModalImg');
+    this.frame = document.querySelector('#imgModalFrame');
+    this.lastTrigger = null;
+
+    this.onClick = this.onClick.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
   }
 
-  /**
-   * Открывает модалку и подставляет нужный тип контента.
-   * @param {string} src
-   */
-  openMedia(src) {
-    if (!src || !this.modal) return;
+  init() {
+    if (!this.modal || !this.image || !this.frame) return;
+    document.addEventListener('click', this.onClick);
+    document.addEventListener('keydown', this.onKeyDown);
+  }
 
-    this.modal.classList.toggle('img-modal--pdf', this.isPdf(src));
-    this.setMediaSource(src);
-    this.updateDownloadLink(src);
+  open(src, trigger) {
+    if (!src) return;
+    this.lastTrigger = trigger;
+    const isPdf = this.isPdf(src);
+    this.modal.classList.toggle('img-modal--pdf', isPdf);
+
+    if (isPdf) {
+      this.image.removeAttribute('src');
+      this.image.hidden = true;
+      this.frame.src = this.getPdfViewerSrc(src);
+      this.frame.hidden = false;
+    } else {
+      this.frame.removeAttribute('src');
+      this.frame.hidden = true;
+      this.image.src = src;
+      this.image.hidden = false;
+    }
+
     this.modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('no-scroll');
+    this.modal.querySelector('[data-modal-close]')?.focus();
   }
 
-  /**
-   * Закрывает модалку и очищает контент.
-   */
-  closeMedia() {
-    if (!this.modal) return;
-
+  close() {
+    if (this.modal.getAttribute('aria-hidden') !== 'false') return;
     this.modal.setAttribute('aria-hidden', 'true');
     this.modal.classList.remove('img-modal--pdf');
-    this.clearMediaSource();
-    this.updateDownloadLink('');
+    this.image.removeAttribute('src');
+    this.image.hidden = true;
+    this.frame.removeAttribute('src');
+    this.frame.hidden = true;
     document.body.classList.remove('no-scroll');
+    this.lastTrigger?.focus();
+    this.lastTrigger = null;
   }
 
-  /**
-   * Показывает либо изображение, либо PDF во встроенном iframe.
-   * @param {string} src
-   */
-  setMediaSource(src) {
-    if (this.isPdf(src)) {
-      if (this.modalImg) {
-        this.modalImg.removeAttribute('src');
-        this.modalImg.hidden = true;
-      }
-      if (this.modalFrame) {
-        this.modalFrame.src = this.getPdfViewerSrc(src);
-        this.modalFrame.hidden = false;
-      }
-      return;
-    }
-
-    if (this.modalFrame) {
-      this.modalFrame.removeAttribute('src');
-      this.modalFrame.hidden = true;
-    }
-
-    if (this.modalImg) {
-      this.modalImg.src = src;
-      this.modalImg.hidden = false;
-    }
-  }
-
-  /**
-   * Очищает и изображение, и iframe.
-   */
-  clearMediaSource() {
-    if (this.modalImg) {
-      this.modalImg.removeAttribute('src');
-      this.modalImg.hidden = true;
-    }
-
-    if (this.modalFrame) {
-      this.modalFrame.removeAttribute('src');
-      this.modalFrame.hidden = true;
-    }
-  }
-
-  /**
-   * Проверяет, ведет ли ссылка на PDF.
-   * @param {string} src
-   * @returns {boolean}
-   */
   isPdf(src) {
     try {
-      const parsedUrl = new URL(src, window.location.href);
-      return parsedUrl.pathname.toLowerCase().endsWith('.pdf');
-    } catch (error) {
-      return String(src || '').toLowerCase().includes('.pdf');
+      return new URL(src, window.location.href).pathname.toLowerCase().endsWith('.pdf');
+    } catch {
+      return String(src).toLowerCase().includes('.pdf');
     }
   }
 
-  /**
-   * @param {string} src
-   * @returns {string}
-   */
   getPdfViewerSrc(src) {
-    try {
-      const parsedUrl = new URL(src, window.location.href);
-      const params = new URLSearchParams(parsedUrl.hash.slice(1));
-      params.set('toolbar', '0');
-      params.set('navpanes', '0');
-      parsedUrl.hash = params.toString();
-      return parsedUrl.toString();
-    } catch (error) {
-      const separator = String(src).includes('#') ? '&' : '#';
-      return `${src}${separator}toolbar=0&navpanes=0`;
-    }
+    const url = new URL(src, window.location.href);
+    const params = new URLSearchParams(url.hash.slice(1));
+    params.set('toolbar', '0');
+    params.set('navpanes', '0');
+    url.hash = params.toString();
+    return url.toString();
   }
 
-  /**
-   * Обновляет состояние кнопки скачивания.
-   * @param {string} src
-   */
-  updateDownloadLink(src) {
-    if (!this.downloadLink) return;
+  getTrigger(target) {
+    if (!(target instanceof Element)) return null;
+    const trigger = target.closest('[data-img]');
+    return trigger && !trigger.closest('.img-modal') ? trigger : null;
+  }
 
-    if (!src) {
-      this.downloadLink.removeAttribute('href');
-      this.downloadLink.removeAttribute('download');
-      this.downloadLink.removeAttribute('data-file-name');
-      this.downloadLink.setAttribute('aria-disabled', 'true');
-      this.downloadLink.tabIndex = -1;
+  onClick(event) {
+    const closeButton = event.target instanceof Element
+      ? event.target.closest('[data-modal-close]')
+      : null;
+    if (event.target === this.modal || closeButton) {
+      event.preventDefault();
+      this.close();
       return;
     }
 
-    this.downloadLink.href = src;
-    this.downloadLink.download = this.extractFileName(src);
-    this.downloadLink.dataset.fileName = this.extractFileName(src);
-    this.downloadLink.removeAttribute('aria-disabled');
-    this.downloadLink.tabIndex = 0;
+    const trigger = this.getTrigger(event.target);
+    if (!trigger) return;
+    event.preventDefault();
+    this.open(trigger.dataset.img, trigger);
   }
 
-  /**
-   * Возвращает имя файла из URL.
-   * @param {string} src
-   * @returns {string}
-   */
-  extractFileName(src) {
-    try {
-      const parsedUrl = new URL(src, window.location.href);
-      const pathname = parsedUrl.pathname || '';
-      return decodeURIComponent(pathname.slice(pathname.lastIndexOf('/') + 1)) || 'file';
-    } catch (error) {
-      return 'file';
+  onKeyDown(event) {
+    if (event.key === 'Escape') {
+      this.close();
+      return;
     }
-  }
+    if (!['Enter', ' '].includes(event.key)) return;
 
-  /**
-   * @returns {boolean}
-   */
-  isOpen() {
-    return this.modal?.getAttribute('aria-hidden') === 'false';
+    const trigger = this.getTrigger(event.target);
+    if (!trigger) return;
+    event.preventDefault();
+    this.open(trigger.dataset.img, trigger);
   }
 }
 
 /**
- * Отвечает за модалку портретного фото на главной странице.
+ * Формирует каталог наград и применяет фильтры.
+ * Список файлов встроен в скрипт, чтобы каталог работал даже без локального HTTP-сервера.
  */
-class ImageModal extends MediaModal {
-  /**
-   * @param {{
-   *   triggerSelector:string,
-   *   sourceImgSelector:string,
-   *   modalSelector:string,
-   *   modalImgSelector:string,
-   *   modalFrameSelector?:string,
-   *   closeBtnSelector:string,
-   *   downloadLinkSelector?:string
-   * }} opts
-   */
-  constructor(opts) {
-    super(opts);
-
-    this.trigger = document.querySelector(opts.triggerSelector);
-    this.sourceImg = document.querySelector(opts.sourceImgSelector);
-
-    this.onTriggerClick = this.onTriggerClick.bind(this);
-    this.onTriggerKeyDown = this.onTriggerKeyDown.bind(this);
-    this.onModalClick = this.onModalClick.bind(this);
-    this.onKeyDown = this.onKeyDown.bind(this);
-    this.onCloseClick = this.onCloseClick.bind(this);
-  }
-
-  /**
-   * Подключает обработчики модалки портрета.
-   */
-  init() {
-    if (!this.trigger || !this.sourceImg || !this.modal || !this.modalImg) return;
-
-    this.trigger.addEventListener('click', this.onTriggerClick);
-    this.trigger.addEventListener('keydown', this.onTriggerKeyDown);
-    this.modal.addEventListener('click', this.onModalClick);
-    document.addEventListener('keydown', this.onKeyDown);
-
-    if (this.closeBtn) {
-      this.closeBtn.addEventListener('click', this.onCloseClick);
-    }
-  }
-
-  /**
-   * Открывает портрет в модалке.
-   */
-  open() {
-    const imageSrc = this.sourceImg.currentSrc || this.sourceImg.src;
-    this.openMedia(imageSrc);
-  }
-
-  /**
-   * Закрывает модалку портрета.
-   */
-  close() {
-    this.closeMedia();
-  }
-
-  /**
-   * @param {KeyboardEvent} e
-   */
-  onTriggerKeyDown(e) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      this.open();
-    }
-  }
-
-  /**
-   * Открытие по клику на карточку фото.
-   */
-  onTriggerClick() {
-    this.open();
-  }
-
-  /**
-   * Закрытие по кнопке.
-   */
-  onCloseClick() {
-    this.close();
-  }
-
-  /**
-   * Закрытие по клику на затемнение.
-   * @param {MouseEvent} e
-   */
-  onModalClick(e) {
-    if (e.target === this.modal) this.close();
-  }
-
-  /**
-   * Закрытие по Escape.
-   * @param {KeyboardEvent} e
-   */
-  onKeyDown(e) {
-    if (e.key === 'Escape' && this.isOpen()) this.close();
-  }
-}
-
-/**
- * Управляет переключателем темы.
- */
-class AutoGallery {
-  constructor(opts = {}) {
-    this.selector = opts.selector ?? '[data-auto-gallery]';
-    this.allowedExt = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif', 'pdf']);
+class AchievementGallery {
+  constructor() {
+    this.galleries = new Map();
     this.collator = new Intl.Collator('ru', { numeric: true, sensitivity: 'base' });
-    this.cache = new Map();
-    this.controls = new Map();
-    this.storagePrefix = 'olyushinvv:auto-gallery:';
-    this.storageVersion = 'v6';
-    this.storageTtlMs = 7 * 24 * 60 * 60 * 1000;
   }
 
-  /**
-   * Инициализирует все галереи на странице.
-   */
   init() {
-    const galleries = Array.from(document.querySelectorAll(this.selector));
-
-    galleries.forEach((gallery) => {
-      this.bindControls(gallery);
-      this.loadGallery(gallery);
-    });
-  }
-
-  /**
-   * Загружает содержимое одной галереи через GitHub API.
-   * @param {HTMLElement} gallery
-   */
-  async loadGallery(gallery) {
-    const cfg = this.getConfig(gallery);
-    if (!cfg) {
-      this.renderMessage(gallery, 'Ошибка конфигурации галереи.');
-      return;
-    }
-
-    const cached = this.loadPersistentCache(cfg);
-    if (cached && cached.length) {
-      this.cache.set(gallery, cached);
-      this.renderFromCache(gallery);
-    }
-
-    try {
-      const files = await this.fetchRepoFiles(cfg);
-      const images = files
-        .filter((item) => item && item.type === 'file' && this.isAllowedFile(item.name))
-        .map((item) => ({
-          name: item.name,
-          path: item.path || item.name,
-          urlPath: this.getRelativeRepoPath(cfg.path, item.path || item.name),
-          isPdf: this.isPdfFile(item.name),
-          dateMs: this.extractDateFromName(item.name),
-          displayName: this.extractDisplayName(item.path || item.name),
-          category: this.getItemCategory(item),
-        }));
-
-      if (!images.length) {
-        this.renderMessage(gallery, 'В этой папке пока нет изображений.');
+    document.querySelectorAll('[data-auto-gallery]').forEach((gallery) => {
+      const controls = this.getControls(gallery);
+      const config = this.getConfig(gallery);
+      if (!controls || !config) {
+        this.renderStatus(gallery, 'Ошибка конфигурации галереи.');
         return;
       }
 
-      this.cache.set(gallery, images);
-      this.savePersistentCache(cfg, images);
-      this.renderFromCache(gallery);
-    } catch (error) {
-      console.error('AutoGallery error:', error);
-      const fallback = this.getEmbeddedManifestFiles(cfg.manifest);
-      if (fallback.length) {
-        const images = fallback
-          .filter((item) => item && item.type === 'file' && this.isAllowedFile(item.name))
-          .map((item) => ({
-            name: item.name,
-            path: item.path || item.name,
-            urlPath: this.getRelativeRepoPath(cfg.path, item.path || item.name),
-            isPdf: this.isPdfFile(item.name),
-            dateMs: this.extractDateFromName(item.name),
-            displayName: this.extractDisplayName(item.path || item.name),
-            category: this.getItemCategory(item),
-          }));
-
-        if (images.length) {
-          this.cache.set(gallery, images);
-          this.savePersistentCache(cfg, images);
-          this.renderFromCache(gallery);
-          return;
-        }
-      }
-
-      this.renderMessage(gallery, 'Не удалось загрузить изображения автоматически.');
-    }
-  }
-
-  /**
-   * Считывает конфигурацию галереи из data-атрибутов.
-   * @param {HTMLElement} gallery
-   * @returns {null|{owner:string, repo:string, path:string, base:string, title:string, branch:string, sortMode:string}}
-   */
-  getConfig(gallery) {
-    // Настройки галереи приходят из data-* атрибутов страницы.
-    const owner = gallery.dataset.repoOwner;
-    const repo = gallery.dataset.repoName;
-    const category = this.getGalleryCategory(gallery);
-    const path = this.getGalleryPath(gallery, category);
-    const base = this.getGalleryBase(gallery, category);
-    const manifest = this.getGalleryManifest(gallery, category);
-    const title = this.getGalleryTitle(gallery, category);
-    const branch = gallery.dataset.galleryBranch || gallery.dataset.repoBranch || '';
-    const sortMode = this.normalizeSortMode(gallery.dataset.gallerySort || 'name-asc');
-
-    if (!owner || !repo || !path || !base) return null;
-    return { owner, repo, path, base, manifest, title, category, branch, sortMode };
-  }
-
-  /**
-   * Возвращает путь файла относительно корневой папки галереи.
-   * @param {string} rootPath
-   * @param {string} fullPath
-   * @returns {string}
-   */
-  getRelativeRepoPath(rootPath, fullPath) {
-    const root = String(rootPath || '').replace(/^\/+|\/+$/g, '');
-    const full = String(fullPath || '').replace(/^\/+|\/+$/g, '');
-
-    if (!root) return full;
-    if (full === root) return '';
-
-    const prefix = `${root}/`;
-    return full.startsWith(prefix) ? full.slice(prefix.length) : full;
-  }
-
-  /**
-   * @param {HTMLElement} gallery
-   * @returns {string}
-   */
-  getGalleryCategory(gallery) {
-    const cached = this.controls.get(gallery) || {};
-    const categoryEl = cached.categoryEl || null;
-    const value = String(categoryEl?.value || gallery.dataset.galleryCategory || 'all').toLowerCase();
-    return this.normalizeGalleryCategory(value);
-  }
-
-  /**
-   * @param {string} value
-   * @returns {'all'|'diplomas'|'certificates'|'gratitude'}
-   */
-  normalizeGalleryCategory(value) {
-    const category = String(value || '').toLowerCase();
-    return ['all', 'diplomas', 'certificates', 'gratitude'].includes(category)
-      ? category
-      : 'all';
-  }
-
-  /**
-   * @param {HTMLElement} gallery
-   * @param {string} category
-   * @returns {string}
-   */
-  getGalleryPath(gallery, category) {
-    if (category === 'certificates' && gallery.dataset.galleryPathCertificates) {
-      return gallery.dataset.galleryPathCertificates;
-    }
-    return gallery.dataset.galleryPath || '';
-  }
-
-  /**
-   * @param {HTMLElement} gallery
-   * @param {string} category
-   * @returns {string}
-   */
-  getGalleryBase(gallery, category) {
-    if (category === 'certificates' && gallery.dataset.galleryBaseCertificates) {
-      return gallery.dataset.galleryBaseCertificates;
-    }
-    return gallery.dataset.galleryBase || '';
-  }
-
-  /**
-   * @param {HTMLElement} gallery
-   * @param {string} category
-   * @returns {string}
-   */
-  getGalleryManifest(gallery, category) {
-    if (category === 'certificates' && gallery.dataset.galleryManifestCertificates) {
-      return gallery.dataset.galleryManifestCertificates;
-    }
-    return gallery.dataset.galleryManifest || '';
-  }
-
-  /**
-   * Возвращает ключ кэша для конкретной галереи.
-   * @param {{path:string, manifest:string, base:string, branch:string}} cfg
-   * @returns {string}
-   */
-  getCacheKey(cfg) {
-    const parts = [
-      this.storageVersion,
-      cfg.branch || 'main',
-      cfg.path || '',
-      cfg.manifest || '',
-      cfg.base || '',
-    ];
-
-    return `${this.storagePrefix}${parts.join('|')}`;
-  }
-
-  /**
-   * Загружает галерею из localStorage, если кэш ещё актуален.
-   * @param {{path:string, manifest:string, base:string, branch:string}} cfg
-   * @returns {Array<{name:string,type?:string,path?:string,urlPath?:string,isPdf?:boolean,dateMs?:number|null,displayName?:string}>|null}
-   */
-  loadPersistentCache(cfg) {
-    try {
-      const raw = localStorage.getItem(this.getCacheKey(cfg));
-      if (!raw) return null;
-
-      const payload = JSON.parse(raw);
-      if (!payload || typeof payload !== 'object') return null;
-
-      const cachedAt = Number(payload.cachedAt || 0);
-      if (!cachedAt || Date.now() - cachedAt > this.storageTtlMs) return null;
-
-      const items = Array.isArray(payload.items) ? payload.items : [];
-      if (!items.length) return null;
-
-      return items.filter((item) => item && item.name && item.path);
-    } catch (error) {
-      return null;
-    }
-  }
-
-  /**
-   * Сохраняет галерею в localStorage.
-   * @param {{path:string, manifest:string, base:string, branch:string}} cfg
-   * @param {Array<{name:string,path:string,urlPath:string,isPdf:boolean,dateMs:number|null,displayName:string}>} items
-   */
-  savePersistentCache(cfg, items) {
-    try {
-      const payload = {
-        cachedAt: Date.now(),
-        items,
-      };
-
-      localStorage.setItem(this.getCacheKey(cfg), JSON.stringify(payload));
-    } catch (error) {
-      // Игнорируем ошибки кэширования, чтобы не мешать загрузке галереи.
-    }
-  }
-
-  /**
-   * @param {HTMLElement} gallery
-   * @param {string} category
-   * @returns {string}
-   */
-  getGalleryTitle(gallery, category) {
-    if (category === 'all') {
-      return gallery.dataset.galleryTitleAll || 'Награда';
-    }
-    if (category === 'certificates' && gallery.dataset.galleryTitleCertificates) {
-      return gallery.dataset.galleryTitleCertificates;
-    }
-    if (category === 'gratitude' && gallery.dataset.galleryTitleGratitude) {
-      return gallery.dataset.galleryTitleGratitude;
-    }
-    return gallery.dataset.galleryTitle || 'Документ';
-  }
-
-  /**
-   * Загружает список файлов из указанной папки репозитория.
-   * @param {{owner:string, repo:string, path:string, branch:string}} cfg
-   */
-  async fetchRepoFiles(cfg) {
-    try {
-      const repoItems = await this.fetchRepoFilesRecursive(cfg, cfg.path);
-      if (repoItems.length) return repoItems;
-    } catch (error) {
-      // При недоступности GitHub API используем локальный манифест.
-    }
-
-    if (!cfg.manifest) return [];
-    return this.fetchManifestFiles(cfg.manifest);
-  }
-
-  /**
-   * Загружает список файлов из локального манифеста.
-   * @param {string} manifestPath
-   * @returns {Promise<Array<{name:string,type:string,path?:string}>>}
-   */
-  async fetchManifestFiles(manifestPath) {
-    const embedded = this.getEmbeddedManifestFiles(manifestPath);
-    if (embedded.length) {
-      return embedded;
-    }
-
-    try {
-      const response = await fetch(manifestPath, {
-        headers: { Accept: 'application/json' },
-      });
-
-      if (!response.ok) return [];
-
-      const payload = await response.json();
-      if (!Array.isArray(payload)) return [];
-
-      const items = payload
-        .map((item) => this.normalizeManifestItem(item))
+      const items = config.files
+        .map((entry) => this.normalizeItem(entry))
         .filter(Boolean);
-
-      return items.length ? items : embedded;
-    } catch (error) {
-      return embedded;
-    }
+      this.galleries.set(gallery, { controls, config, items });
+      this.bindControls(gallery, controls, config);
+      if (items.length) this.render(gallery);
+      else this.renderStatus(gallery, 'В каталоге пока нет наград.');
+    });
   }
 
-  /**
-   * Возвращает встроенный список файлов для локальной работы без fetch.
-   * @param {string} manifestPath
-   * @returns {Array<{name:string,type:string,path?:string}>}
-   */
-  getEmbeddedManifestFiles(manifestPath) {
-    const fileName = this.extractManifestFileName(manifestPath);
-    const items = EMBEDDED_GALLERY_MANIFESTS[fileName] || [];
-
-    return items
-      .map((item) => this.normalizeManifestItem(item))
-      .filter(Boolean);
-  }
-
-  /**
-   * Извлекает имя manifest-файла из пути.
-   * @param {string} manifestPath
-   * @returns {string}
-   */
-  extractManifestFileName(manifestPath) {
-    try {
-      const parsedUrl = new URL(manifestPath, window.location.href);
-      return decodeURIComponent(parsedUrl.pathname.split('/').filter(Boolean).pop() || '');
-    } catch (error) {
-      return decodeURIComponent(String(manifestPath || '').split(/[?#]/)[0].split('/').filter(Boolean).pop() || '');
-    }
-  }
-
-  /**
-   * Приводит элемент манифеста к формату файлов GitHub API.
-   * @param {string|object} item
-   * @returns {null|{name:string,type:string,path?:string}}
-   */
-  normalizeManifestItem(item) {
-    if (typeof item === 'string') {
-      const cleanPath = item.trim();
-      if (!cleanPath) return null;
-      return {
-        name: cleanPath.split('/').filter(Boolean).pop() || cleanPath,
-        path: cleanPath,
-        type: 'file',
-        category: this.getItemCategory({ path: cleanPath }),
-      };
-    }
-
-    if (!item || typeof item !== 'object') return null;
-
-    const name = String(item.name || '').trim();
-    const path = String(item.path || item.name || '').trim();
-    if (!name && !path) return null;
+  getConfig(gallery) {
+    const id = gallery.dataset.galleryId;
+    const baseUrl = gallery.dataset.galleryBase;
+    const files = ACHIEVEMENT_FILES[id];
+    if (!baseUrl || !files) return null;
 
     return {
-      name: name || path.split('/').filter(Boolean).pop() || path,
-      path: path || name,
-      type: item.type || 'file',
-      category: this.getItemCategory({ path, category: item.category }),
+      baseUrl: baseUrl.replace(/\/$/, ''),
+      files,
+      defaultCategory: this.normalizeCategory(gallery.dataset.galleryCategory),
+      defaultSort: this.normalizeSort(gallery.dataset.gallerySort),
+      titles: {
+        diplomas: gallery.dataset.galleryTitle || 'Диплом',
+        certificates: gallery.dataset.galleryTitleCertificates || 'Сертификат',
+        gratitude: gallery.dataset.galleryTitleGratitude || 'Благодарность',
+      },
     };
   }
 
-  /**
-   * Возвращает явно назначенную категорию документа.
-   * @param {{path?:string,category?:string}} item
-   * @returns {'diplomas'|'certificates'|'gratitude'}
-   */
-  getItemCategory(item) {
-    if (item?.category) return this.normalizeGalleryCategory(item.category);
+  getControls(gallery) {
+    const id = gallery.dataset.galleryId;
+    const root = id
+      ? document.querySelector(`[data-gallery-controls][data-gallery-target="${id}"]`)
+      : null;
+    if (!root) return null;
 
-    const segments = String(item?.path || '')
-      .toLowerCase()
-      .split(/[\\/]/)
-      .filter(Boolean);
+    const controls = {
+      category: root.querySelector('[data-gallery-category]'),
+      sort: root.querySelector('[data-gallery-sort]'),
+      from: root.querySelector('[data-gallery-from]'),
+      to: root.querySelector('[data-gallery-to]'),
+      clear: root.querySelector('[data-gallery-clear]'),
+    };
+    return Object.values(controls).every(Boolean) ? controls : null;
+  }
 
+  bindControls(gallery, controls, config) {
+    controls.category.value = config.defaultCategory;
+    controls.sort.value = config.defaultSort;
+    controls.category.dispatchEvent(new Event('themed-select-sync'));
+    controls.sort.dispatchEvent(new Event('themed-select-sync'));
+
+    [controls.category, controls.sort, controls.from, controls.to].forEach((control) => {
+      control.addEventListener('change', () => this.render(gallery));
+    });
+
+    controls.clear.addEventListener('click', () => {
+      controls.category.value = config.defaultCategory;
+      controls.sort.value = config.defaultSort;
+      controls.from.value = '';
+      controls.to.value = '';
+      controls.category.dispatchEvent(new Event('themed-select-sync'));
+      controls.sort.dispatchEvent(new Event('themed-select-sync'));
+      this.render(gallery);
+    });
+  }
+
+  normalizeItem(entry) {
+    const path = typeof entry === 'string' ? entry.trim() : String(entry?.path || '').trim();
+    if (!path || (typeof entry === 'object' && entry.type && entry.type !== 'file')) return null;
+
+    const name = path.split('/').filter(Boolean).pop() || '';
+    if (!this.isAllowedFile(name)) return null;
+
+    return {
+      name,
+      relativePath:path.replace(/^\/+/, ''),
+      category: this.getCategory(path),
+      date: this.extractDate(name),
+      isPdf: name.toLowerCase().endsWith('.pdf'),
+      displayName: name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim(),
+    };
+  }
+
+  isAllowedFile(name) {
+    const extension = name.includes('.') ? name.split('.').pop().toLowerCase() : '';
+    return GALLERY_FILE_EXTENSIONS.has(extension);
+  }
+
+  getCategory(path) {
+    const segments = path.toLowerCase().split('/');
     if (segments.includes('certificates')) return 'certificates';
     if (segments.includes('gratitude')) return 'gratitude';
     return 'diplomas';
   }
 
-  /**
-   * Рекурсивно собирает файлы из папки репозитория и всех вложенных подпапок.
-   * @param {{owner:string, repo:string, path:string, branch:string}} cfg
-   * @param {string} path
-   * @returns {Promise<Array<{name:string,type:string,path?:string}>>}
-   */
-  async fetchRepoFilesRecursive(cfg, path) {
-    const encodedPath = path
-      .split('/')
-      .filter(Boolean)
-      .map((part) => encodeURIComponent(part))
-      .join('/');
-
-    const refQuery = cfg.branch ? `?ref=${encodeURIComponent(cfg.branch)}` : '';
-    const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodedPath}${refQuery}`;
-
-    const response = await fetch(url, {
-      headers: { Accept: 'application/vnd.github+json' },
-      cache: 'no-store',
-    });
-
-    if (!response.ok) {
-      throw new Error(`GitHub API ${response.status}`);
-    }
-
-    const payload = await response.json();
-    const items = Array.isArray(payload) ? payload : [];
-    const files = [];
-
-    for (const item of items) {
-      if (!item || !item.type) continue;
-      if (item.type === 'file') {
-        files.push(item);
-        continue;
-      }
-
-      if (item.type === 'dir' && item.path) {
-        const nested = await this.fetchRepoFilesRecursive(cfg, item.path);
-        files.push(...nested);
-      }
-    }
-
-    return files;
+  normalizeCategory(value) {
+    const category = String(value || '').toLowerCase();
+    return ['all', 'diplomas', 'certificates', 'gratitude'].includes(category) ? category : 'all';
   }
 
-  /**
-   * Проверяет, является ли файл изображением.
-   * @param {string} name
-   * @returns {boolean}
-   */
-  isAllowedFile(name) {
-    const idx = name.lastIndexOf('.');
-    if (idx < 0) return false;
-    const ext = name.slice(idx + 1).toLowerCase();
-    return this.allowedExt.has(ext);
+  normalizeSort(value) {
+    const [fieldValue, directionValue] = String(value || '').split('-');
+    const field = fieldValue === 'date' ? 'date' : 'name';
+    const direction = directionValue === 'desc' ? 'desc' : 'asc';
+    return `${field}-${direction}`;
   }
 
-  /**
-   * @param {string} name
-   * @returns {boolean}
-   */
-  isPdfFile(name) {
-    return String(name || '').toLowerCase().endsWith('.pdf');
+  // Принимает дату в формате ДД.ММ.ГГГГ и отбрасывает невозможные календарные даты.
+  parseDateInput(value, endOfDay = false) {
+    const match = String(value || '').trim().match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+    if (!match) return null;
+
+    const day = Number(match[1]);
+    const month = Number(match[2]);
+    const year = Number(match[3]);
+    const date = new Date(year, month - 1, day, endOfDay ? 23 : 0, endOfDay ? 59 : 0, endOfDay ? 59 : 0, endOfDay ? 999 : 0);
+
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+    return date.getTime();
   }
 
-  /**
-   * Привязывает сортировку и фильтры к галерее.
-   * @param {HTMLElement} gallery
-   */
-  bindControls(gallery) {
-    const id = gallery.dataset.galleryId;
-    if (!id) return;
-
-    const controls = document.querySelector(
-      `[data-gallery-controls][data-gallery-target="${id}"]`
-    );
-    if (!controls) return;
-
-    const categoryEl = controls.querySelector('[data-gallery-category]');
-    const sortEl = controls.querySelector('[data-gallery-sort]');
-    const fromEl = controls.querySelector('[data-gallery-from]');
-    const toEl = controls.querySelector('[data-gallery-to]');
-    const searchEl = controls.querySelector('[data-gallery-search]');
-    const searchClearBtn = controls.querySelector('[data-gallery-search-clear]');
-    const clearBtn = controls.querySelector('[data-gallery-clear]');
-
-    this.controls.set(gallery, {
-      controls,
-      categoryEl,
-      sortEl,
-      fromEl,
-      toEl,
-      searchEl,
-      searchClearBtn,
-      clearBtn,
-    });
-
-    if (categoryEl && gallery.dataset.galleryCategory) {
-      categoryEl.value = gallery.dataset.galleryCategory;
+  // Извлекает полную дату или хотя бы год из имени файла для сортировки и фильтрации.
+  extractDate(name) {
+    const value = name.replace(/\.[^.]+$/, '');
+    const fullDate = value.match(/(20\d{2})[-_.](\d{1,2})[-_.](\d{1,2})/);
+    if (fullDate) {
+      const date = new Date(Number(fullDate[1]), Number(fullDate[2]) - 1, Number(fullDate[3]));
+      return date.getTime();
     }
 
-    if (sortEl && gallery.dataset.gallerySort) {
-      sortEl.value = gallery.dataset.gallerySort;
-    }
+    const year = value.match(/(?:^|\D)(20\d{2})(?:\D|$)/);
+    return year ? new Date(Number(year[1]), 0, 1).getTime() : null;
+  }
 
-    const onChange = () => this.renderFromCache(gallery);
-    if (categoryEl) {
-      categoryEl.addEventListener('change', () => {
-        if (this.cache.has(gallery)) {
-          this.renderFromCache(gallery);
-        } else {
-          this.loadGallery(gallery);
-        }
-      });
-    }
-    if (sortEl) sortEl.addEventListener('change', onChange);
-    if (fromEl) fromEl.addEventListener('change', onChange);
-    if (toEl) toEl.addEventListener('change', onChange);
-    if (searchEl) searchEl.addEventListener('input', onChange);
+  render(gallery) {
+    const state = this.galleries.get(gallery);
+    if (!state?.items.length) return;
 
-    if (clearBtn) {
-      clearBtn.addEventListener('click', () => {
-        if (categoryEl) categoryEl.value = gallery.dataset.galleryCategory || 'all';
-        if (fromEl) fromEl.value = '';
-        if (toEl) toEl.value = '';
-        if (sortEl) sortEl.value = gallery.dataset.gallerySort || 'name-asc';
-        categoryEl?.dispatchEvent(new Event('themed-select-sync'));
-        sortEl?.dispatchEvent(new Event('themed-select-sync'));
-        this.renderFromCache(gallery);
+    const { controls, config } = state;
+    const category = this.normalizeCategory(controls.category.value);
+    const from = this.parseDateInput(controls.from.value);
+    const to = this.parseDateInput(controls.to.value, true);
+
+    let items = category === 'all'
+      ? [...state.items]
+      : state.items.filter((item) => item.category === category);
+
+    if (from || to) {
+      items = items.filter((item) => {
+        if (!item.date) return false;
+        return (!from || item.date >= from) && (!to || item.date <= to);
       });
     }
 
-    if (searchClearBtn && searchEl) {
-      searchClearBtn.addEventListener('click', () => {
-        searchEl.value = '';
-        this.renderFromCache(gallery);
-        searchEl.focus();
-      });
-    }
-  }
-
-  /**
-   * Перерисовывает галерею из кэша после сортировки и фильтрации.
-   * @param {HTMLElement} gallery
-   * @param {object|null} cfgOverride
-   */
-  renderFromCache(gallery, cfgOverride = null) {
-    const cached = this.cache.get(gallery);
-    if (!cached || !cached.length) return;
-
-    const cfg = cfgOverride || this.getConfig(gallery);
-    if (!cfg) return;
-
-    const { sortMode, fromMs, toMs } = this.getControlState(gallery, cfg);
-    let images = this.filterByCategory(cached, cfg.category);
-    images = this.filterByRange(images, fromMs, toMs);
-    images = this.filterBySearch(images, this.getSearchQuery(gallery));
-    images = this.sortImages(images, sortMode);
-
-    if (!images.length) {
-      this.renderMessage(
-        gallery,
-        fromMs || toMs ? 'Нет файлов в выбранном диапазоне.' : 'В выбранной категории пока нет документов.'
-      );
+    items = this.sortItems(items, controls.sort.value);
+    if (!items.length) {
+      this.renderStatus(gallery, from || to
+        ? 'Нет наград в выбранном диапазоне.'
+        : 'В выбранной категории пока нет наград.');
       return;
     }
 
-    this.renderTiles(gallery, images, cfg);
+    this.renderItems(gallery, items, config);
   }
 
-  /**
-   * Возвращает текущее состояние контролов галереи.
-   * @param {HTMLElement} gallery
-   * @param {{sortMode:string}} cfg
-   */
-  getControlState(gallery, cfg) {
-    const cached = this.controls.get(gallery) || {};
-    const sortEl = cached.sortEl || null;
-    const fromEl = cached.fromEl || null;
-    const toEl = cached.toEl || null;
+  sortItems(items, sortValue) {
+    const [field, direction] = this.normalizeSort(sortValue).split('-');
+    const factor = direction === 'desc' ? -1 : 1;
 
-    const sortMode = this.normalizeSortMode(sortEl?.value || cfg.sortMode || 'name-asc');
-    const fromMs = this.parseDateInput(fromEl?.value);
-    const toMs = this.parseDateInput(toEl?.value, { endOfDay: true });
-    const searchQuery = this.getSearchQuery(gallery);
-
-    return { sortMode, fromMs, toMs, searchQuery };
-  }
-
-  /**
-   * Возвращает строку поиска для текущей галереи.
-   * @param {HTMLElement} gallery
-   * @returns {string}
-   */
-  getSearchQuery(gallery) {
-    const cached = this.controls.get(gallery) || {};
-    const searchEl = cached.searchEl || null;
-    return String(searchEl?.value || '').trim().toLowerCase();
-  }
-
-  /**
-   * Парсит дату из поля фильтра.
-   * Поддерживает форматы `дд.мм.гггг` и `гггг-мм-дд`.
-   *
-   * @param {string} value
-   * @param {{endOfDay?:boolean}} opts
-   * @returns {number|null}
-   */
-  parseDateInput(value, opts = {}) {
-    if (!value) return null;
-
-    const trimmed = String(value).trim();
-    let dateStr = trimmed;
-
-    const dmy = trimmed.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
-    if (dmy) {
-      dateStr = `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
-    }
-
-    const iso = opts.endOfDay ? `${dateStr}T23:59:59.999` : `${dateStr}T00:00:00.000`;
-    const date = new Date(iso);
-    return Number.isNaN(date.getTime()) ? null : date.getTime();
-  }
-
-  /**
-   * Отфильтровывает изображения по диапазону дат.
-   * @param {Array<{name:string, dateMs:number|null}>} images
-   * @param {number|null} fromMs
-   * @param {number|null} toMs
-   */
-  filterByRange(images, fromMs, toMs) {
-    if (!fromMs && !toMs) return images;
-
-    return images.filter((img) => {
-      if (!img.dateMs) return false;
-      if (fromMs && img.dateMs < fromMs) return false;
-      if (toMs && img.dateMs > toMs) return false;
-      return true;
-    });
-  }
-
-  /**
-   * Фильтрует документы по имени, подписи и пути.
-   * При пустом запросе возвращает полный список.
-   *
-   * @param {Array<{name?:string,path?:string,displayName?:string}>} images
-   * @param {string} query
-   */
-  filterBySearch(images, query) {
-    const normalizedQuery = String(query || '').trim().toLowerCase();
-    if (!normalizedQuery) return images;
-
-    return images.filter((img) => (
-      [img.name, img.displayName, img.path]
-        .filter(Boolean)
-        .some((value) => String(value).toLowerCase().includes(normalizedQuery))
-    ));
-  }
-
-  /**
-   * Оставляет только документы выбранного типа.
-   * @param {Array<{category?:string}>} images
-   * @param {string} category
-   */
-  filterByCategory(images, category) {
-    const selectedCategory = this.normalizeGalleryCategory(category);
-    if (selectedCategory === 'all') return images;
-    return images.filter((img) => this.getItemCategory(img) === selectedCategory);
-  }
-
-  /**
-   * Сортирует изображения по имени или по дате.
-   * @param {Array<{name:string, dateMs:number|null}>} images
-   * @param {string} sortMode
-   */
-  sortImages(images, sortMode) {
-    const [modeRaw, dirRaw] = String(sortMode || 'name-asc').split('-');
-    const mode = modeRaw === 'date' ? 'date' : 'name';
-    const dir = dirRaw === 'desc' ? 'desc' : 'asc';
-    const dirFactor = dir === 'desc' ? -1 : 1;
-
-    return [...images].sort((a, b) => {
-      if (mode === 'date') {
-        const dateA = a.dateMs ?? this.extractDateFromName(a.name);
-        const dateB = b.dateMs ?? this.extractDateFromName(b.name);
-
-        if (dateA && dateB) {
-          const dateCompare = dateA - dateB;
-          if (dateCompare !== 0) return dateCompare * dirFactor;
-          return this.collator.compare(a.name, b.name) * dirFactor;
-        }
-        if (dateA) return -1 * dirFactor;
-        if (dateB) return 1 * dirFactor;
+    return items.sort((left, right) => {
+      if (field === 'date') {
+        if (left.date && right.date && left.date !== right.date) return (left.date - right.date) * factor;
+        if (left.date && !right.date) return -1;
+        if (!left.date && right.date) return 1;
       }
-
-      return this.collator.compare(a.name, b.name) * dirFactor;
+      return this.collator.compare(left.name, right.name) * factor;
     });
   }
 
-  /**
-   * Приводит режим сортировки к безопасному виду.
-   * @param {string} value
-   * @returns {string}
-   */
-  normalizeSortMode(value) {
-    const [modeRaw, dirRaw] = String(value || 'name-asc').split('-');
-    const mode = modeRaw === 'date' ? 'date' : 'name';
-    const dir = dirRaw === 'desc' ? 'desc' : 'asc';
-    return `${mode}-${dir}`;
-  }
-
-  /**
-   * Пытается извлечь дату из имени файла.
-   * Поддерживаются форматы:
-   * - YYYY-MM-DD
-   * - YYYY_MM_DD
-   * - DD-MM-YYYY
-   * - DD_MM_YYYY
-   *
-   * @param {string} name
-   * @returns {number|null}
-   */
-  extractDateFromName(name) {
-    const clean = String(name || '').replace(/\.[^.]+$/, '');
-
-    const ymd = clean.match(/(20\d{2})[-_.](\d{1,2})[-_.](\d{1,2})/);
-    if (ymd) {
-      const date = new Date(Number(ymd[1]), Number(ymd[2]) - 1, Number(ymd[3]));
-      return Number.isNaN(date.getTime()) ? null : date.getTime();
-    }
-
-    const dmy = clean.match(/(\d{1,2})[-_.](\d{1,2})[-_.](20\d{2})/);
-    if (dmy) {
-      const date = new Date(Number(dmy[3]), Number(dmy[2]) - 1, Number(dmy[1]));
-      return Number.isNaN(date.getTime()) ? null : date.getTime();
-    }
-
-    // Если на документе указан только год, сохраняем корректную группировку по годам.
-    const yearOnly = clean.match(/(?:^|\D)(20\d{2})(?:\D|$)/);
-    if (yearOnly) {
-      return new Date(Number(yearOnly[1]), 0, 1).getTime();
-    }
-
-    return null;
-  }
-
-  /**
-   * Собирает публичный URL файла для браузера.
-   * @param {string} base
-   * @param {string} fileName
-   * @returns {string}
-   */
-  buildImageUrl(base, fileName) {
-    const cleanBase = base.replace(/\/$/, '');
-    const encodedPath = String(fileName || '')
+  buildFileUrl(baseUrl, relativePath) {
+    const encodedPath = relativePath
       .split('/')
       .filter(Boolean)
       .map((part) => encodeURIComponent(part))
       .join('/');
-    return `${cleanBase}/${encodedPath}`;
+    return `${baseUrl}/${encodedPath}`;
   }
 
-  /**
-   * Рендерит плитки галереи.
-   * @param {HTMLElement} gallery
-   * @param {Array<{name:string,isPdf?:boolean}>} images
-   * @param {{base:string, title:string}} cfg
-   */
-  renderTiles(gallery, images, cfg) {
-    gallery.innerHTML = '';
+  renderItems(gallery, items, config) {
+    const fragment = document.createDocumentFragment();
 
-    images.forEach((file, index) => {
-      // PDF и изображения обрабатываются одним и тем же рендером.
-      const imageUrl = this.buildImageUrl(cfg.base, file.urlPath || file.name);
-      const formatLabel = this.getFileFormatLabel(file.name);
-      const displayName = file.displayName || this.extractDisplayName(file.name);
-
+    items.forEach((item, index) => {
+      const src = this.buildFileUrl(config.baseUrl, item.relativePath);
       const tile = document.createElement('div');
       tile.className = 'tile';
+      tile.tabIndex = 0;
       tile.setAttribute('role', 'button');
-      tile.setAttribute('tabindex', '0');
-      tile.setAttribute('data-img', imageUrl);
+      tile.dataset.img = src;
 
       const media = document.createElement('div');
       media.className = 'tile-media';
-      const showCaption = gallery.dataset.galleryCaption === 'true';
 
-      if (file.isPdf) {
-        tile.classList.add('tile--pdf');
-
+      if (item.isPdf) {
         const frame = document.createElement('iframe');
         frame.className = 'tile-pdf__preview';
-        frame.src = `${imageUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`;
-        frame.setAttribute('title', `${cfg.title} ${index + 1}`);
-        frame.setAttribute('loading', 'lazy');
-        frame.setAttribute('tabindex', '-1');
+        frame.src = `${src}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`;
+        frame.title = `${config.titles[item.category]} ${index + 1}`;
+        frame.loading = 'lazy';
+        frame.tabIndex = -1;
         frame.setAttribute('aria-hidden', 'true');
-
-        const badge = document.createElement('span');
-        badge.className = 'tile-pdf__badge';
-        badge.textContent = 'PDF';
         media.appendChild(frame);
-        media.appendChild(badge);
       } else {
-        const img = document.createElement('img');
-        img.src = imageUrl;
-        img.alt = displayName || `${cfg.title} ${index + 1}`;
-        img.loading = 'lazy';
-        img.decoding = 'async';
-
-        media.appendChild(img);
+        const image = document.createElement('img');
+        image.src = src;
+        image.alt = `${config.titles[item.category]}: ${item.displayName}`;
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        media.appendChild(image);
       }
 
       const badge = document.createElement('span');
       badge.className = 'tile-format__badge';
-      badge.textContent = formatLabel;
+      badge.textContent = item.name.split('.').pop().toUpperCase().replace('JPEG', 'JPG');
       media.appendChild(badge);
-
       tile.appendChild(media);
-
-      if (showCaption) {
-        const caption = document.createElement('div');
-        caption.className = 'cap';
-        caption.textContent = displayName;
-        tile.appendChild(caption);
-      }
-
-      const openButton = document.createElement('button');
-      openButton.type = 'button';
-      openButton.className = 'tile-open';
-      openButton.setAttribute('aria-label', `Открыть ${displayName || file.name}`);
-      tile.appendChild(openButton);
-
-      gallery.appendChild(tile);
+      fragment.appendChild(tile);
     });
+
+    gallery.replaceChildren(fragment);
   }
 
-  /**
-   * @param {string} fileName
-   * @returns {string}
-   */
-  extractDisplayName(fileName) {
-    const raw = String(fileName || '');
-    const lower = raw.toLowerCase();
-
-    const knownTitles = [
-      ['проект 1 - разработка по поехали! славгород', 'Разработка мобильного ПО «Поехали! Славгород»'],
-      ['проект 2 - мультифора', 'Разработка ПО «Мультифора»'],
-      ['проект 3 - веб-сайт бара прибой', 'Проект «Бар Прибой»'],
-      ['проект 4 - разработка веб-сайта по продаже комплектующих', 'Выпускная квалификационная работа'],
-      ['poehali-slavgorod-project', 'Разработка мобильного ПО «Поехали! Славгород»'],
-      ['multiforka-project', 'Разработка ПО «Мультифорка»'],
-      ['bar-priboy-project', 'Проект «Бар Прибой»'],
-      ['osipov-danil-final-thesis', 'Выпускная квалификационная работа'],
-      ['документ.pdf', 'Документ'],
-      ['программа.zip', 'Программа'],
-    ];
-
-    for (const [needle, title] of knownTitles) {
-      if (lower.includes(needle)) return title;
-    }
-
-    const stem = raw.replace(/\.[^.]+$/, '');
-    return stem.split(/[\\/]/).pop().replace(/[_-]+/g, ' ').trim();
-  }
-
-  /**
-   * @param {string} fileName
-   * @returns {string}
-   */
-  getFileFormatLabel(fileName) {
-    const idx = String(fileName || '').lastIndexOf('.');
-    if (idx < 0) return 'FILE';
-
-    const ext = String(fileName || '').slice(idx + 1).toLowerCase();
-    if (ext === 'jpeg') return 'JPG';
-    return ext.toUpperCase();
-  }
-
-  /**
-   * Показывает текстовое сообщение вместо галереи.
-   * @param {HTMLElement} gallery
-   * @param {string} text
-   */
-  renderMessage(gallery, text) {
-    gallery.innerHTML = '';
-
-    const msg = document.createElement('p');
-    msg.className = 'subtitle';
-    msg.style.margin = '0';
-    msg.textContent = text;
-
-    gallery.appendChild(msg);
+  renderStatus(gallery, text) {
+    const status = document.createElement('p');
+    status.className = 'gallery-status';
+    status.textContent = text;
+    gallery.replaceChildren(status);
   }
 }
 
-/**
- * Лайтбокс для плиток галереи и кликабельных карточек документов.
- */
-class GalleryLightbox extends MediaModal {
-  /**
-   * @param {{
-   *   modalSelector:string,
-   *   modalImgSelector:string,
-   *   modalFrameSelector?:string,
-   *   closeBtnSelector:string,
-   *   downloadLinkSelector?:string
-   * }} opts
-   */
-  constructor(opts) {
-    super(opts);
-
-    this.onClick = this.onClick.bind(this);
-    this.onKeyDown = this.onKeyDown.bind(this);
-    this.onDownloadClick = this.onDownloadClick.bind(this);
-  }
-
-  /**
-   * Подключает обработчики глобально на документ.
-   */
+// Обрабатывает кнопки скачивания архивов со студенческими проектами.
+class ProjectDownloads {
   init() {
-    if (!this.modal || !this.modalImg) return;
+    if (!document.querySelector('[data-project-download]')) return;
 
-    document.addEventListener('click', this.onClick);
-    document.addEventListener('keydown', this.onKeyDown);
-
-    if (this.downloadLink) {
-      this.downloadLink.addEventListener('click', this.onDownloadClick);
-    }
-  }
-
-  /**
-   * Открывает модалку по ссылке на файл.
-   * @param {string} src
-   */
-  open(src) {
-    this.openMedia(src);
-  }
-
-  /**
-   * Закрывает лайтбокс.
-   */
-  close() {
-    this.closeMedia();
-  }
-
-  /**
-   * Перехватывает клик по плитке, карточке документа, оверлею и кнопке закрытия.
-   * @param {MouseEvent} e
-   */
-  onClick(e) {
-    if (e.target === this.modal) {
-      this.close();
-      return;
-    }
-
-    const target = e.target && e.target.closest ? e.target : null;
-    if (!target) return;
-
-    if (target.closest('[data-modal-close]')) {
-      e.preventDefault();
-      this.close();
-      return;
-    }
-
-    const tile = target.closest('.tile[data-img]');
-    if (tile) {
-      e.preventDefault();
-      this.open(tile.getAttribute('data-img'));
-      return;
-    }
-
-    const projectPdf = target.closest('.project-card__actions a[href]');
-    if (projectPdf) {
-      const src = projectPdf.getAttribute('data-img') || projectPdf.getAttribute('href');
-      if (this.isPdf(src)) {
-        e.preventDefault();
-        this.open(src);
-        return;
-      }
-    }
-
-    const link = target.closest('.row--link[data-img], .row--link[href]');
-    if (link) {
-      e.preventDefault();
-      this.open(link.getAttribute('data-img') || link.getAttribute('href'));
-    }
-  }
-
-  /**
-   * Поддерживает открытие с клавиатуры и закрытие по Escape.
-   * @param {KeyboardEvent} e
-   */
-  onKeyDown(e) {
-    if (e.key === 'Escape') {
-      this.close();
-      return;
-    }
-
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-
-    const target = e.target && e.target.closest ? e.target : null;
-    if (!target) return;
-
-    const tile = target.closest('.tile[data-img]');
-    if (tile) {
-      e.preventDefault();
-      this.open(tile.getAttribute('data-img'));
-      return;
-    }
-
-    const projectPdf = target.closest('.project-card__actions a[href]');
-    if (projectPdf) {
-      const src = projectPdf.getAttribute('data-img') || projectPdf.getAttribute('href');
-      if (this.isPdf(src)) {
-        e.preventDefault();
-        this.open(src);
-        return;
-      }
-    }
-
-    const link = target.closest('.row--link[data-img], .row--link[href]');
-    if (!link) return;
-
-    e.preventDefault();
-    this.open(link.getAttribute('data-img') || link.getAttribute('href'));
-  }
-
-  /**
-   * Принудительно скачивает текущий файл из модалки.
-   * @param {MouseEvent} e
-   */
-  onDownloadClick(e) {
-    if (!this.downloadLink || this.downloadLink.getAttribute('aria-disabled') === 'true') {
-      e.preventDefault();
-      return;
-    }
-
-    e.preventDefault();
-
-    const src = this.downloadLink.getAttribute('href');
-    const fileName = this.downloadLink.dataset.fileName || this.downloadLink.getAttribute('download') || 'file';
-    forceDownloadFile(src, fileName);
+    document.addEventListener('click', (event) => {
+      const button = event.target instanceof Element
+        ? event.target.closest('[data-project-download]')
+        : null;
+      if (!button) return;
+      event.preventDefault();
+      downloadFile(button.dataset.projectSrc, button.dataset.projectName || 'project.zip');
+    });
   }
 }
 
-/**
- * Обрабатывает кнопки скачивания полных проектов.
- */
-class ProjectDownloadManager {
-  constructor() {
-    this.onClick = this.onClick.bind(this);
-  }
-
-  /**
-   * Подключает делегирование кликов.
-   */
-  init() {
-    document.addEventListener('click', this.onClick);
-  }
-
-  /**
-   * @param {MouseEvent} e
-   */
-  onClick(e) {
-    const button = e.target && e.target.closest ? e.target.closest('[data-project-download]') : null;
-    if (!button) return;
-
-    e.preventDefault();
-
-    const src = button.getAttribute('data-project-src');
-    const fileName = button.getAttribute('data-project-name') || 'project.pdf';
-    forceDownloadFile(src, fileName);
-  }
-}
-
-/**
- * Фильтрует проекты по текстовому поиску.
- */
-class ProjectSearchManager {
-  constructor() {
-    this.roots = [];
-    this.onInput = this.onInput.bind(this);
-    this.onClearClick = this.onClearClick.bind(this);
-  }
-
-  /**
-   * Подключает поиск к найденным блокам.
-   */
-  init() {
-    this.roots = Array.from(document.querySelectorAll('[data-project-search]'))
-      .map((root) => this.buildContext(root))
-      .filter(Boolean);
-
-    this.roots.forEach((ctx) => {
-      ctx.input.addEventListener('input', this.onInput);
-      ctx.clearBtn.addEventListener('click', this.onClearClick);
-      this.update(ctx);
-    });
-  }
-
-  /**
-   * Фильтрует изображения по поисковой строке.
-   * @param {Array<{name:string, displayName?:string, path?:string}>} images
-   * @param {string} query
-   * @returns {Array<{name:string, displayName?:string, path?:string}>}
-   */
-  filterBySearch(images, query) {
-    const cleanQuery = String(query || '').trim().toLowerCase();
-    if (!cleanQuery) return images;
-
-    return images.filter((img) => {
-      const haystack = [
-        img.displayName,
-        img.name,
-        img.path,
-      ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase();
-
-      return haystack.includes(cleanQuery);
-    });
-  }
-
-  /**
-   * @param {HTMLElement} root
-   * @returns {null|{root:HTMLElement,input:HTMLInputElement,clearBtn:HTMLButtonElement,empty:HTMLElement|null,cards:Array<{card:HTMLElement,text:string}>}}
-   */
-  buildContext(root) {
-    const input = root.querySelector('[data-project-search-input]');
-    const clearBtn = root.querySelector('[data-project-search-clear]');
-    const empty = root.querySelector('[data-project-search-empty]');
-    const grid = root.parentElement?.querySelector('[data-project-grid]');
-    const cards = grid ? Array.from(grid.querySelectorAll('.project-card')).map((card) => ({
-      card,
-      text: card.textContent.toLowerCase(),
-    })) : [];
-
-    if (!input || !clearBtn || !cards.length) return null;
-    return { root, input, clearBtn, empty, cards };
-  }
-
-  /**
-   * @param {Event} e
-   */
-  onInput(e) {
-    const root = e.currentTarget?.closest?.('[data-project-search]');
-    const ctx = this.roots.find((item) => item.root === root);
-    if (!ctx) return;
-    this.update(ctx);
-  }
-
-  /**
-   * @param {MouseEvent} e
-   */
-  onClearClick(e) {
-    const root = e.currentTarget?.closest?.('[data-project-search]');
-    const ctx = this.roots.find((item) => item.root === root);
-    if (!ctx) return;
-
-    ctx.input.value = '';
-    this.update(ctx);
-    ctx.input.focus();
-  }
-
-  /**
-   * @param {{input:HTMLInputElement, empty:HTMLElement|null, cards:Array<{card:HTMLElement,text:string}>}} ctx
-   */
-  update(ctx) {
-    const query = ctx.input.value.trim().toLowerCase();
-    let visibleCount = 0;
-
-    ctx.cards.forEach(({ card, text }) => {
-      const matches = !query || text.includes(query);
-      card.hidden = !matches;
-      card.setAttribute('aria-hidden', matches ? 'false' : 'true');
-      if (matches) visibleCount += 1;
-    });
-
-    if (ctx.empty) {
-      ctx.empty.hidden = visibleCount > 0;
-    }
-  }
-}
-
-/**
- * Подставляет названия карточек из имен папок проекта.
- */
-class ProjectTitleManager {
-  constructor() {
-    this.selector = '[data-project-grid] .project-card';
-  }
-
-  /**
-   * Инициализирует автозаполнение заголовков.
-   */
-  init() {
-    const cards = Array.from(document.querySelectorAll(this.selector));
-    cards.forEach((card) => this.updateCardTitle(card));
-  }
-
-  /**
-   * @param {HTMLElement} card
-   */
-  updateCardTitle(card) {
-    const title = card.querySelector('.project-card__body h3');
-    if (!title) return;
-
-    const source = card.getAttribute('data-project-folder')
-      || card.querySelector('[data-project-src]')?.getAttribute('data-project-src')
-      || card.querySelector('.project-card__actions a[href]')?.getAttribute('href')
-      || '';
-
-    const folderName = this.extractFolderName(source);
-    if (!folderName) return;
-
-    title.textContent = folderName;
-  }
-
-  /**
-   * Извлекает имя папки из пути к файлу.
-   * @param {string} path
-   * @returns {string}
-   */
-  extractFolderName(path) {
-    const rawPath = String(path || '').split(/[?#]/)[0].trim();
-    if (!rawPath) return '';
-
-    try {
-      const url = new URL(rawPath, window.location.href);
-      const segments = decodeURIComponent(url.pathname).split('/').filter(Boolean);
-      return this.normalizeFolderName(this.pickProjectFolderName(segments));
-    } catch (error) {
-      const segments = decodeURIComponent(rawPath).split('/').filter(Boolean);
-      return this.normalizeFolderName(this.pickProjectFolderName(segments));
-    }
-  }
-
-  /**
-   * Возвращает имя папки проекта из сегментов пути.
-   * Для файлов берёт папку-родитель, для папки - её собственное имя.
-   * @param {string[]} segments
-   * @returns {string}
-   */
-  pickProjectFolderName(segments) {
-    if (!Array.isArray(segments) || !segments.length) return '';
-
-    const last = segments[segments.length - 1] || '';
-    if (this.looksLikeFileName(last)) {
-      return segments.length >= 2 ? segments[segments.length - 2] : '';
-    }
-
-    return last === 'students-work' ? '' : last;
-  }
-
-  /**
-   * Проверяет, похоже ли значение на имя файла.
-   * @param {string} name
-   * @returns {boolean}
-   */
-  looksLikeFileName(name) {
-    return /\.[a-z0-9]{1,5}$/i.test(String(name || '').trim());
-  }
-
-  /**
-   * Убирает служебный префикс у имени папки.
-   * @param {string} folderName
-   * @returns {string}
-   */
-  normalizeFolderName(folderName) {
-    return String(folderName || '')
-      .replace(/^Проект\s*\d+\s*-\s*/i, '')
-      .trim();
-  }
-}
-
-/**
- * Главная точка входа клиентского приложения.
- */
-class App {
-  constructor() {
-    this.mobileMenu = new MobileMenu({
-      burgerSelector: '[data-burger]',
-      navSelector: '[data-nav]',
-    });
-
-    this.dropdownManager = new DropdownManager();
-    this.themedSelectManager = new ThemedSelectManager();
-
-    this.reveal = new RevealOnScroll({
-      selectors: '.page-title, .subtitle, .section, .row, .tile, .hero, .portrait, .badge, .btn, .repo-card, .project-card, .project-grid',
-    });
-
-    this.imageModal = new ImageModal({
-      triggerSelector: '#portraitCard',
-      sourceImgSelector: '#portraitImg',
-      modalSelector: '#imgModal',
-      modalImgSelector: '#imgModalImg',
-      modalFrameSelector: '#imgModalFrame',
-    });
-
-    this.autoGallery = new AutoGallery();
-
-    this.galleryLightbox = new GalleryLightbox({
-      modalSelector: '#imgModal',
-      modalImgSelector: '#imgModalImg',
-      modalFrameSelector: '#imgModalFrame',
-    });
-
-    this.projectDownloadManager = new ProjectDownloadManager();
-    this.projectTitleManager = new ProjectTitleManager();
-    this.projectSearchManager = new ProjectSearchManager();
-  }
-
-  /**
-   * Инициализирует все компоненты страницы.
-   */
-  init() {
-    this.mobileMenu.init();
-    this.dropdownManager.init();
-    this.themedSelectManager.init();
-    this.reveal.init();
-    this.imageModal.init();
-    this.autoGallery.init();
-    this.galleryLightbox.init();
-    this.projectDownloadManager.init();
-    this.projectTitleManager.init();
-    this.projectSearchManager.init();
-  }
-}
-
-/**
- * Запускает приложение после полной загрузки DOM.
- */
-document.addEventListener('DOMContentLoaded', () => {
-  document.documentElement.setAttribute('data-theme', 'dark');
-  initTeachingExperience();
-  new App().init();
-  cleanupLegacyServiceWorker();
-});
-
-/**
- * Удаляет старые service worker и их кеши, чтобы не ловить устаревшие версии страниц.
- */
+// Старые версии сайта регистрировали service worker. Удаляем его кеши,
+// чтобы постоянные посетители не получали устаревшие страницы после обновления.
 function cleanupLegacyServiceWorker() {
   if (!('serviceWorker' in navigator) || !('caches' in window)) return;
 
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.getRegistrations()
-      .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
-      .then(() => caches.keys())
-      .then((keys) => Promise.all(
-        keys
-          .filter((key) => key.startsWith('olyushinvv-site-'))
-          .map((key) => caches.delete(key))
-      ))
-      .catch((error) => {
-        console.warn('Legacy service worker cleanup failed:', error);
-      });
+  window.addEventListener('load', async () => {
+    try {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map((registration) => registration.unregister()));
+
+      const cacheNames = await caches.keys();
+      await Promise.all(cacheNames
+        .filter((name) => name.startsWith('olyushinvv-site-'))
+        .map((name) => caches.delete(name)));
+    } catch (error) {
+      console.warn('Не удалось удалить старый кеш сайта:', error);
+    }
   });
 }
 
-
-
-
-
+document.addEventListener('DOMContentLoaded', () => {
+  updateTeachingExperience();
+  new Navigation().init();
+  new ThemedSelectManager().init();
+  new AchievementGallery().init();
+  new MediaViewer().init();
+  new ProjectDownloads().init();
+  new RevealOnScroll('.page-title, .subtitle, .section, .row, .portrait, .project-card').init();
+  cleanupLegacyServiceWorker();
+});

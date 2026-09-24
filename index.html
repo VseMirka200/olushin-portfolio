@@ -6,7 +6,7 @@
   <link rel="icon" href="assets/img/favicon.ico" type="image/x-icon">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Олюшин | Портфолио</title>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20260910g" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260910h" />
 </head>
 
 <body>
@@ -48,12 +48,11 @@
 
     <section class="section hero">
       <div class="portrait">
-        <div class="portrait-card" id="portraitCard" role="button" tabindex="0"
+        <div class="portrait-card" role="button" tabindex="0" data-img="assets/img/portrait.jpg"
              aria-label="Открыть фото в полном размере">
           <img
             src="assets/img/portrait.jpg"
             alt="Фото преподавателя"
-            id="portraitImg"
           />
         </div>
       </div>
@@ -62,7 +61,7 @@
         <h2>Краткая информация</h2>
         <ul class="factlist">
           <li><b>Город:</b> Славгород</li>
-          <li><b>Педагогический стаж:</b> 2 года</li>
+          <li><b>Педагогический стаж:</b> <span data-teaching-experience="2024-08-26">2 года</span></li>
           <li><b>Квалификационная категория:</b> без категории</li>
           <li><b>Место работы:</b>
             <a href="https://vk.com/yarovoe_tehnikum">КГБПОУ "Яровской политехнический техникум"</a>
@@ -103,14 +102,15 @@
     </div>
   </footer>
 
-  <div class="img-modal" id="imgModal" aria-hidden="true" role="dialog">
+  <div class="img-modal" id="imgModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Просмотр изображения">
     <div class="img-modal__dialog">
-      <img class="img-modal__img" id="imgModalImg" alt="Документ" />
+      <button class="img-modal__close" type="button" data-modal-close aria-label="Закрыть">&times;</button>
+      <img class="img-modal__img" id="imgModalImg" alt="Изображение" hidden />
       <iframe class="img-modal__frame" id="imgModalFrame" title="Документ" hidden></iframe>
     </div>
   </div>
 
-  <script src="assets/js/main.js?v=20260626a"></script>
+  <script src="assets/js/main.js?v=20260910h"></script>
 </body>
 </html>
 
