@@ -443,6 +443,29 @@ img{max-width:100%;display:block}
   box-shadow:none;
 }
 
+.img-modal__close{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:2;
+  display:grid;
+  place-items:center;
+  width:44px;
+  height:44px;
+  padding:0;
+  border:1px solid rgba(255,255,255,.45);
+  border-radius:50%;
+  background:rgba(15,17,21,.82);
+  color:#fff;
+  font:400 32px/1 Arial, sans-serif;
+  cursor:pointer;
+  backdrop-filter:blur(6px);
+  transition:background .15s ease, transform .15s ease;
+}
+
+.img-modal__close:hover{background:rgba(15,17,21,.96);transform:scale(1.05)}
+.img-modal__close:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px}
+
 .img-modal--pdf .img-modal__dialog{
   background:#fff;
 }
@@ -505,6 +528,11 @@ img{max-width:100%;display:block}
   .img-modal__dialog{
     max-height:calc(100vh - 12px);
     border-radius:12px;
+  }
+
+  .img-modal__close{
+    top:8px;
+    right:8px;
   }
 
   .img-modal__img{

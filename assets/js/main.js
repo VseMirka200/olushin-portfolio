@@ -13,50 +13,50 @@
  */
 const EMBEDDED_GALLERY_MANIFESTS = {
   'students-manifest.json': [
-    'content/achievements/students/2026-02-27_1.webp',
-    'content/achievements/students/2026-02-27_2.webp',
-    'content/achievements/students/2026-02-27_3.webp',
-    'content/achievements/students/2026-02-27_4.webp',
-    'content/achievements/students/2026-02-27_5.webp',
-    'content/achievements/students/2026-02-27_6.webp',
-    'content/achievements/students/2026-02-27_7.webp',
-    'content/achievements/students/2026-02-27_8.webp',
-    'content/achievements/students/2026-02-27_9.webp',
-    'content/achievements/students/2026-02-27_10.webp',
-    'content/achievements/students/2026-02-27_11.webp',
-    'content/achievements/students/2026-03-03_12.webp',
-    'content/achievements/students/2026-03-05_13.webp',
-    'content/achievements/students/2026-03-05_14.webp',
-    'content/achievements/students/2026-03-25_15.webp',
-    'content/achievements/students/2026-03-26_16.webp',
-    'content/achievements/students/2026-03-26_17.webp',
-    'content/achievements/students/2026-04-22_18.webp',
-    'content/achievements/students/2026-04-22_19.webp',
-    'content/achievements/students/2026-04-22_20.webp',
+    'content/achievements/students/certificates/2025-undated_1.webp',
+    'content/achievements/students/certificates/2025-undated_2.webp',
+    'content/achievements/students/certificates/2025-03-20_3.webp',
+    'content/achievements/students/diplomas/2025-undated_4.webp',
+    'content/achievements/students/diplomas/2025-05-30_5.webp',
+    'content/achievements/students/diplomas/2025-05-30_6.webp',
+    'content/achievements/students/diplomas/2025-undated_7.webp',
+    'content/achievements/students/diplomas/2025-12-26_8.webp',
+    'content/achievements/students/diplomas/2026-undated_9.webp',
+    'content/achievements/students/diplomas/2026-undated_10.webp',
+    'content/achievements/students/diplomas/2026-undated_11.webp',
+    'content/achievements/students/diplomas/2026-undated_12.webp',
+    'content/achievements/students/diplomas/2026-undated_13.webp',
+    'content/achievements/students/diplomas/2026-undated_14.webp',
+    'content/achievements/students/diplomas/2026-undated_15.webp',
+    'content/achievements/students/diplomas/2026-undated_16.webp',
+    'content/achievements/students/diplomas/2026-undated_17.webp',
+    'content/achievements/students/certificates/2026-04-18_18.webp',
+    'content/achievements/students/certificates/2026-04-18_19.webp',
+    'content/achievements/students/certificates/2026-04-18_20.webp',
   ],
   'teacher-manifest.json': [
-    'content/achievements/teacher/2026-02-27_1.webp',
-    'content/achievements/teacher/2026-02-27_2.webp',
-    'content/achievements/teacher/2026-02-27_3.webp',
-    'content/achievements/teacher/2026-02-27_4.webp',
-    'content/achievements/teacher/2026-02-27_5.webp',
-    'content/achievements/teacher/2026-02-27_6.webp',
-    'content/achievements/teacher/2026-02-27_7.webp',
-    'content/achievements/teacher/2026-02-27_8.webp',
-    'content/achievements/teacher/2026-02-27_9.webp',
-    'content/achievements/teacher/2026-02-27_10.webp',
-    'content/achievements/teacher/2026-02-27_11.webp',
-    'content/achievements/teacher/2026-02-27_12.webp',
-    'content/achievements/teacher/2026-02-27_13.webp',
-    'content/achievements/teacher/2026-02-27_14.webp',
-    'content/achievements/teacher/2026-02-27_15.webp',
-    'content/achievements/teacher/2026-02-27_16.webp',
-    'content/achievements/teacher/2026-02-27_17.webp',
-    'content/achievements/teacher/2026-02-27_18.webp',
-    'content/achievements/teacher/2026-03-04_19.webp',
-    'content/achievements/teacher/2026-03-25_20.webp',
-    'content/achievements/teacher/2026-03-25_21.webp',
-    'content/achievements/teacher/2026-05-04_22.webp',
+    'content/achievements/teacher/certificates/2025-undated_1.webp',
+    'content/achievements/teacher/certificates/2025-10-07_2.webp',
+    'content/achievements/teacher/certificates/2025-10-07_3.webp',
+    'content/achievements/teacher/diplomas/2025-undated_4.webp',
+    'content/achievements/teacher/certificates/2025-05-22_5.webp',
+    'content/achievements/teacher/diplomas/2025-undated_6.webp',
+    'content/achievements/teacher/gratitude/2025-03-20_7.webp',
+    'content/achievements/teacher/gratitude/2025-undated_8.webp',
+    'content/achievements/teacher/gratitude/2025-05-30_9.webp',
+    'content/achievements/teacher/certificates/2025-11-14_10.webp',
+    'content/achievements/teacher/gratitude/2025-undated_11.webp',
+    'content/achievements/teacher/certificates/2025-12-26_12.webp',
+    'content/achievements/teacher/certificates/2025-12-26_13.webp',
+    'content/achievements/teacher/gratitude/2026-undated_14.webp',
+    'content/achievements/teacher/certificates/2026-01-16_15.webp',
+    'content/achievements/teacher/gratitude/2025-12-26_16.webp',
+    'content/achievements/teacher/certificates/2024-12-25_17.webp',
+    'content/achievements/teacher/gratitude/2026-undated_18.webp',
+    'content/achievements/teacher/gratitude/2026-undated_19.webp',
+    'content/achievements/teacher/gratitude/2026-03-19_20.webp',
+    'content/achievements/teacher/gratitude/2026-04-18_21.webp',
+    'content/achievements/teacher/gratitude/2026-undated_22.webp',
   ],
 };
 
@@ -698,7 +698,7 @@ class AutoGallery {
     this.cache = new Map();
     this.controls = new Map();
     this.storagePrefix = 'olyushinvv:auto-gallery:';
-    this.storageVersion = 'v2';
+    this.storageVersion = 'v5';
     this.storageTtlMs = 7 * 24 * 60 * 60 * 1000;
   }
 
@@ -725,14 +725,13 @@ class AutoGallery {
       return;
     }
 
-    try {
-      const cached = this.loadPersistentCache(cfg);
-      if (cached && cached.length) {
-        this.cache.set(gallery, cached);
-        this.renderFromCache(gallery, cfg);
-        return;
-      }
+    const cached = this.loadPersistentCache(cfg);
+    if (cached && cached.length) {
+      this.cache.set(gallery, cached);
+      this.renderFromCache(gallery, cfg);
+    }
 
+    try {
       const files = await this.fetchRepoFiles(cfg);
       const images = files
         .filter((item) => item && item.type === 'file' && this.isAllowedFile(item.name))
@@ -743,6 +742,7 @@ class AutoGallery {
           isPdf: this.isPdfFile(item.name),
           dateMs: this.extractDateFromName(item.name),
           displayName: this.extractDisplayName(item.path || item.name),
+          category: this.getItemCategory(item),
         }));
 
       if (!images.length) {
@@ -766,6 +766,7 @@ class AutoGallery {
             isPdf: this.isPdfFile(item.name),
             dateMs: this.extractDateFromName(item.name),
             displayName: this.extractDisplayName(item.path || item.name),
+            category: this.getItemCategory(item),
           }));
 
         if (images.length) {
@@ -798,7 +799,7 @@ class AutoGallery {
     const sortMode = this.normalizeSortMode(gallery.dataset.gallerySort || 'name-asc');
 
     if (!owner || !repo || !path || !base) return null;
-    return { owner, repo, path, base, manifest, title, branch, sortMode };
+    return { owner, repo, path, base, manifest, title, category, branch, sortMode };
   }
 
   /**
@@ -826,7 +827,16 @@ class AutoGallery {
     const cached = this.controls.get(gallery) || {};
     const categoryEl = cached.categoryEl || null;
     const value = String(categoryEl?.value || gallery.dataset.galleryCategory || 'diplomas').toLowerCase();
-    return value === 'certificates' ? 'certificates' : 'diplomas';
+    return this.normalizeGalleryCategory(value);
+  }
+
+  /**
+   * @param {string} value
+   * @returns {'diplomas'|'certificates'|'gratitude'}
+   */
+  normalizeGalleryCategory(value) {
+    const category = String(value || '').toLowerCase();
+    return ['certificates', 'gratitude'].includes(category) ? category : 'diplomas';
   }
 
   /**
@@ -934,6 +944,9 @@ class AutoGallery {
     if (category === 'certificates' && gallery.dataset.galleryTitleCertificates) {
       return gallery.dataset.galleryTitleCertificates;
     }
+    if (category === 'gratitude' && gallery.dataset.galleryTitleGratitude) {
+      return gallery.dataset.galleryTitleGratitude;
+    }
     return gallery.dataset.galleryTitle || 'Документ';
   }
 
@@ -942,14 +955,15 @@ class AutoGallery {
    * @param {{owner:string, repo:string, path:string, branch:string}} cfg
    */
   async fetchRepoFiles(cfg) {
-    if (cfg.manifest) {
-      const manifestItems = await this.fetchManifestFiles(cfg.manifest);
-      if (manifestItems.length) {
-        return manifestItems;
-      }
+    try {
+      const repoItems = await this.fetchRepoFilesRecursive(cfg, cfg.path);
+      if (repoItems.length) return repoItems;
+    } catch (error) {
+      // При недоступности GitHub API используем локальный манифест.
     }
 
-    return this.fetchRepoFilesRecursive(cfg, cfg.path);
+    if (!cfg.manifest) return [];
+    return this.fetchManifestFiles(cfg.manifest);
   }
 
   /**
@@ -1024,6 +1038,7 @@ class AutoGallery {
         name: cleanPath.split('/').filter(Boolean).pop() || cleanPath,
         path: cleanPath,
         type: 'file',
+        category: this.getItemCategory({ path: cleanPath }),
       };
     }
 
@@ -1037,7 +1052,26 @@ class AutoGallery {
       name: name || path.split('/').filter(Boolean).pop() || path,
       path: path || name,
       type: item.type || 'file',
+      category: this.getItemCategory({ path, category: item.category }),
     };
+  }
+
+  /**
+   * Возвращает явно назначенную категорию документа.
+   * @param {{path?:string,category?:string}} item
+   * @returns {'diplomas'|'certificates'|'gratitude'}
+   */
+  getItemCategory(item) {
+    if (item?.category) return this.normalizeGalleryCategory(item.category);
+
+    const segments = String(item?.path || '')
+      .toLowerCase()
+      .split(/[\\/]/)
+      .filter(Boolean);
+
+    if (segments.includes('certificates')) return 'certificates';
+    if (segments.includes('gratitude')) return 'gratitude';
+    return 'diplomas';
   }
 
   /**
@@ -1058,7 +1092,7 @@ class AutoGallery {
 
     const response = await fetch(url, {
       headers: { Accept: 'application/vnd.github+json' },
-      cache: 'default',
+      cache: 'no-store',
     });
 
     if (!response.ok) {
@@ -1148,8 +1182,11 @@ class AutoGallery {
     const onChange = () => this.renderFromCache(gallery);
     if (categoryEl) {
       categoryEl.addEventListener('change', () => {
-        this.cache.delete(gallery);
-        this.loadGallery(gallery);
+        if (this.cache.has(gallery)) {
+          this.renderFromCache(gallery);
+        } else {
+          this.loadGallery(gallery);
+        }
       });
     }
     if (sortEl) sortEl.addEventListener('change', onChange);
@@ -1188,14 +1225,15 @@ class AutoGallery {
     if (!cfg) return;
 
     const { sortMode, fromMs, toMs } = this.getControlState(gallery, cfg);
-    let images = this.filterByRange(cached, fromMs, toMs);
+    let images = this.filterByCategory(cached, cfg.category);
+    images = this.filterByRange(images, fromMs, toMs);
     images = this.filterBySearch(images, this.getSearchQuery(gallery));
     images = this.sortImages(images, sortMode);
 
     if (!images.length) {
       this.renderMessage(
         gallery,
-        this.getSearchQuery(gallery) ? 'Ничего не найдено.' : 'Нет файлов в выбранном диапазоне.'
+        fromMs || toMs ? 'Нет файлов в выбранном диапазоне.' : 'В выбранной категории пока нет документов.'
       );
       return;
     }
@@ -1275,6 +1313,16 @@ class AutoGallery {
   }
 
   /**
+   * Оставляет только документы выбранного типа.
+   * @param {Array<{category?:string}>} images
+   * @param {string} category
+   */
+  filterByCategory(images, category) {
+    const selectedCategory = this.normalizeGalleryCategory(category);
+    return images.filter((img) => this.getItemCategory(img) === selectedCategory);
+  }
+
+  /**
    * Сортирует изображения по имени или по дате.
    * @param {Array<{name:string, dateMs:number|null}>} images
    * @param {string} sortMode
@@ -1339,6 +1387,12 @@ class AutoGallery {
     if (dmy) {
       const date = new Date(Number(dmy[3]), Number(dmy[2]) - 1, Number(dmy[1]));
       return Number.isNaN(date.getTime()) ? null : date.getTime();
+    }
+
+    // Если на документе указан только год, сохраняем корректную группировку по годам.
+    const yearOnly = clean.match(/(?:^|\D)(20\d{2})(?:\D|$)/);
+    if (yearOnly) {
+      return new Date(Number(yearOnly[1]), 0, 1).getTime();
     }
 
     return null;
@@ -1557,8 +1611,15 @@ class GalleryLightbox extends MediaModal {
     const target = e.target && e.target.closest ? e.target : null;
     if (!target) return;
 
+    if (target.closest('[data-modal-close]')) {
+      e.preventDefault();
+      this.close();
+      return;
+    }
+
     const tile = target.closest('.tile[data-img]');
     if (tile) {
+      e.preventDefault();
       this.open(tile.getAttribute('data-img'));
       return;
     }
