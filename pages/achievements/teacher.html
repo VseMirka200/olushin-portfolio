@@ -6,7 +6,7 @@
   <link rel="icon" href="../../assets/img/favicon.ico" type="image/x-icon">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Олюшин | Достижения преподавателя</title>
-  <link rel="stylesheet" href="../../assets/css/styles.css?v=20260911g" />
+  <link rel="stylesheet" href="../../assets/css/styles.css?v=20260915a" />
 </head>
 
 <body>
@@ -64,15 +64,6 @@
             </select>
           </label>
           <label class="gallery-control">
-            <span>Сортировка</span>
-            <select data-gallery-sort aria-label="Сортировка">
-              <option value="date-desc" selected>По дате (новые)</option>
-              <option value="date-asc">По дате (старые)</option>
-              <option value="name-asc">По имени (А-Я)</option>
-              <option value="name-desc">По имени (Я-А)</option>
-            </select>
-          </label>
-          <label class="gallery-control">
             <span>С даты</span>
             <input type="text" inputmode="numeric" placeholder="дд.мм.гггг" data-gallery-from />
           </label>
@@ -83,6 +74,14 @@
           <div class="gallery-controls__actions">
             <button type="button" class="btn btn--ghost" data-gallery-clear>Сброс</button>
           </div>
+        </div>
+        <div class="gallery-sort-columns" data-gallery-sort-columns aria-label="Сортировка наград">
+          <button type="button" class="gallery-sort-column" data-gallery-sort-field="name" aria-pressed="false">
+            Имя <span class="gallery-sort-column__direction" aria-hidden="true">↕</span>
+          </button>
+          <button type="button" class="gallery-sort-column" data-gallery-sort-field="date" aria-pressed="true">
+            Дата <span class="gallery-sort-column__direction" aria-hidden="true">↓</span>
+          </button>
         </div>
       </div>
 
@@ -121,7 +120,7 @@
     </div>
   </div>
 
-  <script src="../../assets/js/main.js?v=20260911i"></script>
+  <script src="../../assets/js/main.js?v=20260915a"></script>
 </body>
 </html>
 
