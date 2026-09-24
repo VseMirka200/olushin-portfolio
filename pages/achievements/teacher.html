@@ -6,7 +6,7 @@
   <link rel="icon" href="../../assets/img/favicon.ico" type="image/x-icon">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Олюшин | Достижения преподавателя</title>
-  <link rel="stylesheet" href="../../assets/css/styles.css?v=20260908a" />
+  <link rel="stylesheet" href="../../assets/css/styles.css?v=20260910g" />
 </head>
 
 <body class="achievements-page">
@@ -49,15 +49,16 @@
       <div class="gallery-controls" data-gallery-controls data-gallery-target="teacher">
         <div class="gallery-controls__layout">
           <label class="gallery-control">
-            <span>Категория:</span>
+            <span>Категория</span>
             <select data-gallery-category aria-label="Категория">
-              <option value="diplomas" selected>Дипломы</option>
+              <option value="all" selected>Все награды</option>
+              <option value="diplomas">Дипломы</option>
               <option value="certificates">Сертификаты</option>
               <option value="gratitude">Благодарности</option>
             </select>
           </label>
           <label class="gallery-control">
-            <span>Сортировка:</span>
+            <span>Сортировка</span>
             <select data-gallery-sort aria-label="Сортировка">
               <option value="date-desc" selected>По дате (новые)</option>
               <option value="date-asc">По дате (старые)</option>
@@ -66,11 +67,11 @@
             </select>
           </label>
           <label class="gallery-control">
-            <span>С даты:</span>
+            <span>С даты</span>
             <input type="text" inputmode="numeric" placeholder="дд.мм.гггг" data-gallery-from />
           </label>
           <label class="gallery-control">
-            <span>По дату:</span>
+            <span>По дату</span>
             <input type="text" inputmode="numeric" placeholder="дд.мм.гггг" data-gallery-to />
           </label>
           <div class="gallery-controls__actions">
@@ -85,11 +86,12 @@
            data-gallery-path="content/achievements/teacher"
            data-gallery-base="../../content/achievements/teacher"
            data-gallery-manifest="../../content/achievements/teacher-manifest.json"
+           data-gallery-title-all="Награда"
            data-gallery-title="Диплом"
            data-gallery-title-certificates="Сертификат"
            data-gallery-title-gratitude="Благодарность"
            data-gallery-caption="false"
-           data-gallery-category="diplomas"
+           data-gallery-category="all"
            data-gallery-sort="date-desc"
            data-gallery-branch="main"
            data-repo-owner="VseMirka200"
@@ -114,7 +116,7 @@
     </div>
   </div>
 
-  <script src="../../assets/js/main.js?v=20260908d"></script>
+  <script src="../../assets/js/main.js?v=20260910d"></script>
 </body>
 </html>
 
