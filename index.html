@@ -6,14 +6,14 @@
   <link rel="icon" href="assets/img/favicon.ico" type="image/x-icon">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Олюшин | Портфолио</title>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20260911g" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261020t" />
 </head>
 
 <body>
   <header class="header">
     <div class="container">
       <div class="navbar">
-        <a class="brand" href="index.html">Портфолио</a>
+        <a class="brand" href="index.html"><img src="assets/img/favicon.ico" alt="" />Портфолио</a>
 
         <div class="nav-actions">
           <button class="burger" data-burger aria-label="Меню" aria-expanded="false">
@@ -26,10 +26,8 @@
           <a href="pages/education.html">Образование</a>
           <a href="pages/work-experience.html">Опыт работы</a>
 
-          <div class="dropdown" data-dropdown>
-            <button type="button" data-dropdown-btn aria-haspopup="true" aria-expanded="false">
-              Достижения ▾
-            </button>
+          <div class="dropdown">
+            <span class="nav-section-title">Достижения</span>
             <div class="dropdown-panel">
               <a href="pages/achievements/teacher.html">Преподавателя</a>
               <a href="pages/achievements/students.html">Студентов</a>
@@ -37,6 +35,7 @@
           </div>
 
           <a href="pages/student-works.html">Работы студентов</a>
+          <a href="pages/portfolio.html">Портфолио</a>
         </nav>
       </div>
     </div>
@@ -44,6 +43,7 @@
 
   <main class="container">
     <h1 class="page-title">Олюшин Владислав Викторович</h1>
+    <p class="subtitle">Персональное портфолио преподавателя: образование, профессиональный опыт, достижения и учебные работы студентов.</p>
 
     <section class="section hero">
       <div class="portrait">
@@ -63,7 +63,7 @@
           <li><b>Педагогический стаж:</b> <span data-teaching-experience="2024-08-26">2 года</span></li>
           <li><b>Квалификационная категория:</b> без категории</li>
           <li><b>Место работы:</b>
-            <a href="https://vk.com/yarovoe_tehnikum">КГБПОУ "Яровской политехнический техникум"</a>
+            <a href="https://yar-politeh.edu22.info/">КГБПОУ "Яровской политехнический техникум"</a>
           </li>
           <li><b>Адрес учреждения:</b> 658839, Алтайский край, г. Яровое, ул. Гагарина, 10</li>
           <li><b>Телефон учреждения:</b> +7 (385) 682 07-75</li>
@@ -74,25 +74,27 @@
       </div>
     </section>
 
-    <section class="card">
-      <h2>Описание</h2>
-      <p>
-        Преподаватель специальных дисциплин по направлению «Информационные системы и программирование».
-        В работе уделяю особое внимание формированию практических навыков программирования,
-        работе с информационными системами и подготовке студентов к реальным профессиональным задачам в сфере IT.
-      </p>
-    </section>
+    <div class="home-info-grid">
+      <section class="card">
+        <h2>Описание</h2>
+        <p>
+          Преподаватель специальных дисциплин по направлению «Информационные системы и программирование».
+          В работе уделяю особое внимание формированию практических навыков программирования,
+          работе с информационными системами и подготовке студентов к реальным профессиональным задачам в сфере IT.
+        </p>
+      </section>
 
-    <section class="card">
-      <h2>Место работы</h2>
-      <div class="map-wrapper">
-        <iframe
-          src="https://yandex.ru/map-widget/v1/?ll=78.564672%2C52.915145&z=18&mode=poi&poi%5Bpoint%5D=78.564001%2C52.914537"
-          allowfullscreen
-          loading="lazy">
-        </iframe>
-      </div>
-    </section>
+      <section class="card">
+        <h2>Место работы</h2>
+        <div class="map-wrapper">
+          <iframe
+            src="https://yandex.ru/map-widget/v1/?ll=78.564672%2C52.915145&z=18&mode=poi&poi%5Bpoint%5D=78.564001%2C52.914537"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+        </div>
+      </section>
+    </div>
   </main>
 
   <footer class="footer">
@@ -103,8 +105,8 @@
         <a href="pages/work-experience.html">Опыт работы</a>
         <a href="pages/achievements/index.html">Достижения</a>
         <a href="pages/student-works.html">Работы студентов</a>
+        <a href="pages/portfolio.html">Портфолио</a>
       </nav>
-      <span>&copy; 2026 Олюшин Владислав Викторович</span>
     </div>
   </footer>
 
@@ -116,7 +118,7 @@
     </div>
   </div>
 
-  <script src="assets/js/main.js?v=20261014b"></script>
+  <script src="assets/js/main.js?v=20261020h"></script>
 </body>
 </html>
 

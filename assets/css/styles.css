@@ -1,5 +1,4 @@
-﻿/* Подключение шрифта Roboto из Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap');
+/* Базовые переменные интерфейса. */
 
 :root{
   --bg:#0f1115;
@@ -18,7 +17,7 @@
   --radius-lg:24px;
   --max:1140px;
   --pad:20px;
-  --font:"Roboto", system-ui, -apple-system, "Segoe UI", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  --font:Inter, system-ui, -apple-system, "Segoe UI", Arial, "Noto Sans", "Liberation Sans", sans-serif;
 }
 
 *{box-sizing:border-box}
@@ -144,7 +143,7 @@ img{max-width:100%;display:block}
 
 /* ===== ВЫПАДАЮЩЕЕ МЕНЮ ===== */
 
-/* Панель привязана к кнопке, но при необходимости расширяется под длинный текст. */
+/* Вложенная группа навигации. На рабочем сайте подразделы отображаются постоянно. */
 .dropdown{
   position:relative;
   display:inline-block;
@@ -182,12 +181,6 @@ img{max-width:100%;display:block}
 }
 
 .dropdown-panel a:hover{background:rgba(15,61,62,.08);text-decoration:none}
-
-.dropdown.open .dropdown-panel{
-  opacity:1;
-  transform: translateY(0) scale(1);
-  pointer-events:auto;
-}
 
 .burger{
   display:none;
@@ -239,14 +232,6 @@ img{max-width:100%;display:block}
     min-width:auto;
     width:100%;
     transform:none;
-  }
-  .dropdown:not(.open) .dropdown-panel{
-    display:none;
-  }
-  .dropdown.open .dropdown-panel{
-    display:flex;
-    opacity:1;
-    pointer-events:auto;
   }
   .dropdown-panel a{
     width:100%;
@@ -578,16 +563,6 @@ img{max-width:100%;display:block}
 
 .row:hover{
   transform:translateY(-2px);
-}
-
-/* В образовании hover делаем как у наград: чуть сильнее подъём */
-.education-page .row:hover{
-  transform: translateY(-3px);
-}
-
-/* На странице "Опыт работы" убираем эффект наведения у карточек */
-.work-experience-page .row:hover{
-  transform:none;
 }
 
 .row--link{
@@ -1280,4 +1255,352 @@ img{max-width:100%;display:block}
 
 main.container > :last-child{
   margin-bottom:24px !important;
+}
+
+/* Финальные переопределения темы: размещены после стилей отдельных страниц. */
+:root{color-scheme:dark;--bg:#0b1020;--bg-2:#070b15;--text:#f4f7ff;--muted:#9caac3;--line:rgba(170,195,237,.16);--card:#121a2d;--accent:#79b9ff;--grad-spot-1:#1d3d70;--grad-spot-2:#142b50;--header-bg:rgba(12,18,32,.92);--header-border:rgba(170,195,237,.16);--radius:18px;--radius-lg:18px;--max:1180px}
+html{background:radial-gradient(circle at 82% -15%,var(--grad-spot-1) 0,transparent 32rem),var(--bg-2)}
+body{background:transparent;font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif}
+a:focus-visible,button:focus-visible{outline:3px solid #7ae3c2;outline-offset:3px}
+.page-title{max-width:900px;margin:0 0 12px;font-size:clamp(38px,5vw,68px);line-height:.98;letter-spacing:-.055em}
+.subtitle{max-width:none;width:100%;margin:0 0 28px;color:var(--muted);font-size:18px;line-height:1.6}
+.section,.card{border-color:var(--line);border-radius:18px;background:linear-gradient(145deg,rgba(28,40,65,.9),rgba(16,24,41,.9));box-shadow:none}
+.section{padding:clamp(20px,3vw,28px);margin:18px 0}.card{padding:clamp(20px,3vw,28px);margin-top:18px}.section h2,.card h2{letter-spacing:-.025em}
+.hero{gap:28px}.portrait{padding:0;background:transparent;border-radius:18px}.portrait-card{border:1px solid var(--line);border-radius:18px}
+.factlist a,.card a{color:#9fcbff}.factlist a:hover,.card a:hover{color:#fff}
+.row,.project-card{border-color:var(--line);background:linear-gradient(145deg,rgba(28,40,65,.9),rgba(16,24,41,.9))}
+.row:hover{border-color:rgba(139,191,255,.42);background:#1b2a46;transform:translateY(-3px)}
+.project-card{border-radius:18px;transition:transform .18s ease,border-color .18s ease,background .18s ease}.project-card:hover{border-color:rgba(139,191,255,.42);background:#1b2a46;transform:translateY(-4px)}
+.project-card__body{padding:20px;gap:14px}.project-card__body h3{font-size:21px;letter-spacing:-.025em}.project-card__meta div{border-color:var(--line);background:rgba(9,14,24,.42)}
+.project-card__actions{flex-wrap:wrap}.project-card__actions .btn{flex:1 1 140px;min-height:42px;background:rgba(21,32,53,.72);border-color:rgba(139,191,255,.42)}.project-card__actions .btn:hover{background:#243653}
+.btn{min-height:42px;border-radius:10px;border-color:rgba(139,191,255,.42);background:rgba(21,32,53,.72);font-weight:700}.btn:hover{background:#243653}
+.footer{background:transparent;color:#8290a8}.footer-nav a:hover{color:#9fcbff}.back-to-top{border-color:var(--line);border-radius:10px;background:rgba(10,16,28,.82);color:#fff}.back-to-top:hover{background:rgba(47,128,237,.3)}
+
+@media (min-width:861px){
+  .header{position:fixed;inset:0 auto 0 0;width:280px;height:100vh;border-right:1px solid var(--header-border);border-bottom:0;background:var(--header-bg);backdrop-filter:blur(18px)}
+  .header .container{height:100%;padding:0}.navbar{height:100%;padding:28px 18px;flex-direction:column;align-items:stretch;gap:0;flex-wrap:nowrap}
+  .brand{display:flex;align-items:center;min-height:42px;margin:0 10px 28px;color:var(--text);font-size:18px;font-weight:800;letter-spacing:-.02em;text-transform:none}.brand::before{content:"ВВ";display:grid;place-items:center;width:38px;height:38px;margin-right:11px;border-radius:12px;background:linear-gradient(135deg,#338ce9,#2467cf);box-shadow:0 9px 24px #0005;font-size:12px;letter-spacing:0}.nav-actions{display:none}
+  .nav{display:flex;width:100%;flex-direction:column;align-items:stretch;gap:2px}.nav a,.nav button{width:100%;min-height:38px;padding:9px 11px;justify-content:flex-start;border-radius:9px;color:var(--muted);font-size:14px;font-weight:600;transform:none}.nav a:hover,.nav button:hover,.nav a.active,.nav button.active{background:#21304b;color:var(--text);transform:none}.nav a.active{box-shadow:inset 3px 0 var(--accent)}
+  .dropdown{width:100%}.dropdown>button{justify-content:flex-start}.dropdown-panel{position:static;width:100%;min-width:0;margin-top:2px;border:0;border-radius:0;background:transparent;box-shadow:none}.dropdown-panel a{padding-left:22px;color:var(--muted)}
+  main.container{width:calc(100% - 280px);max-width:none;margin:0 0 0 280px;padding:38px clamp(36px,5vw,84px) 64px}.footer{width:calc(100% - 280px);max-width:none;margin-left:280px;border-top:1px solid var(--line)}.footer .container{max-width:var(--max);padding:24px clamp(36px,5vw,84px) 36px}
+}
+
+@media (max-width:860px){
+  .header{position:sticky;width:auto;height:auto;border-right:0}.navbar{position:relative;padding:12px 0;flex-direction:row;align-items:center}.brand{color:var(--text);text-transform:none}.nav-actions{display:flex;width:auto;margin-left:auto}.burger{border-color:var(--line);background:#1a2539;color:var(--text)}.nav{top:calc(100% + 1px);left:-14px;right:-14px;padding:10px 14px 16px;border-color:var(--line);background:#121a2d}.nav a,.nav button{color:var(--muted)}.nav a.active,.nav button.active,.nav a:hover,.nav button:hover{background:#21304b;color:var(--text)}main.container{padding-top:28px}.page-title{font-size:clamp(34px,10vw,52px)}.subtitle{font-size:16px}
+}
+
+/* «Достижения» — обычная группа навигации с постоянно видимыми подразделами. */
+.nav-section-title{
+  display:flex;
+  align-items:center;
+  width:100%;
+  min-height:38px;
+  padding:9px 11px;
+  border-radius:9px;
+  color:var(--muted);
+  font-size:14px;
+  font-weight:600;
+}
+
+/* Раздел подготовлен, но до наполнения не показывается в навигации. */
+.nav a[href$="portfolio.html"],
+.footer-nav a[href$="portfolio.html"]{display:none}
+
+.dropdown-panel{
+  display:flex;
+  opacity:1;
+  transform:none;
+  pointer-events:auto;
+}
+
+.dropdown-panel a{padding-left:30px}
+
+/* Фирменный знак портфолио в шапке. */
+.brand{
+  display:inline-flex;
+  align-items:center;
+  gap:11px;
+}
+
+.brand > img{
+  width:38px;
+  height:38px;
+  flex:0 0 auto;
+  border-radius:12px;
+  object-fit:cover;
+  object-position:center;
+  box-shadow:0 9px 24px #0005;
+}
+
+@media (min-width:861px){
+  .brand::before{display:none}
+  .brand > img{margin:0}
+}
+
+/* Две связанные информационные карточки на главной странице. */
+.home-info-grid{
+  display:grid;
+  grid-template-columns:minmax(0, .85fr) minmax(0, 1.15fr);
+  gap:18px;
+  margin-top:18px;
+}
+
+.home-info-grid .card{
+  display:flex;
+  flex-direction:column;
+  margin:0;
+}
+
+.home-info-grid .card h2{margin-bottom:6px}
+.home-info-grid .card p{margin:0}
+.home-info-grid .map-wrapper{margin-top:auto}
+.home-info-grid .map-wrapper iframe{height:270px}
+
+@media(max-width:900px){
+  .home-info-grid{grid-template-columns:1fr}
+  .home-info-grid .map-wrapper iframe{height:320px}
+}
+
+/* Кнопка закрытия вынесена в угол экрана, чтобы не перекрывать просматриваемый файл. */
+.img-modal__close{
+  position:fixed;
+  top:18px;
+  right:18px;
+  width:44px;
+  height:44px;
+  border:1px solid rgba(159,203,255,.42);
+  border-radius:10px;
+  background:#152038;
+  box-shadow:0 8px 22px rgba(0,0,0,.35);
+}
+
+.img-modal__close:hover{background:#243653;transform:translateY(-1px)}
+.img-modal__close .img-modal__icon--close{
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:100%;
+  background:none;
+  color:#fff;
+}
+.img-modal__close .img-modal__icon--close::before{content:"×";font-size:30px;font-weight:300;line-height:1}
+
+/* Перелистывание использует тот же вид кнопок, что и закрытие окна. */
+.img-modal__nav{
+  position:fixed;
+  top:50%;
+  width:44px;
+  height:44px;
+  min-width:44px;
+  min-height:44px;
+  padding:0;
+  border:1px solid rgba(159,203,255,.42);
+  border-radius:10px;
+  background:#152038;
+  color:#fff;
+  box-shadow:0 8px 22px rgba(0,0,0,.35);
+}
+
+.img-modal__nav:hover{background:#243653;transform:translateY(-50%)}
+.img-modal__nav--previous{left:18px}
+.img-modal__nav--next{right:18px}
+.img-modal__nav .img-modal__icon{
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:100%;
+  background:none;
+  color:#fff;
+  transform:none;
+}
+.img-modal__nav .img-modal__icon::before{
+  content:"";
+  position:relative;
+  left:-2px;
+  width:12px;
+  height:12px;
+  box-sizing:border-box;
+  border:solid currentColor;
+  border-width:0 2px 2px 0;
+  transform:rotate(-45deg);
+}
+.img-modal__nav--previous .img-modal__icon::before{left:2px;transform:rotate(135deg)}
+
+@media(max-width:700px){
+  .img-modal__close{top:12px;right:12px}
+  .img-modal__nav--previous{left:12px}
+  .img-modal__nav--next{right:12px}
+}
+
+/* Планшеты используют верхнюю навигацию: боковая панель не сужает содержимое. */
+@media (min-width:861px) and (max-width:1099px){
+  .header{
+    position:sticky;
+    inset:auto;
+    width:auto;
+    height:auto;
+    border-right:0;
+    border-bottom:1px solid var(--header-border);
+  }
+
+  .header .container{height:auto;padding-inline:clamp(14px,2vw,24px)}
+  .navbar{position:relative;height:auto;padding:12px 0;flex-direction:row;align-items:center}
+  .brand{min-height:0;margin:0;font-size:17px}
+  .nav-actions{display:flex;width:auto;margin-left:auto}
+  .burger{display:inline-flex;align-items:center;gap:8px;border-color:var(--line);background:#1a2539;color:var(--text)}
+  .nav{
+    display:none;
+    position:absolute;
+    top:calc(100% + 1px);
+    left:-14px;
+    right:-14px;
+    padding:10px 14px 16px;
+    flex-direction:column;
+    align-items:stretch;
+    gap:6px;
+    border-bottom:1px solid var(--line);
+    background:#121a2d;
+    z-index:30;
+  }
+  .nav.open{display:flex}
+  .nav a,.nav button{width:100%;justify-content:flex-start;border-radius:14px;color:var(--muted)}
+  .nav a.active,.nav button.active,.nav a:hover,.nav button:hover{background:#21304b;color:var(--text)}
+  main.container{width:100%;max-width:none;margin:0;padding:32px clamp(24px,4vw,42px) 52px}
+  .footer{width:100%;max-width:none;margin-left:0}
+  .footer .container{max-width:none;padding-inline:clamp(24px,4vw,42px)}
+}
+
+/* Гибкие дочерние элементы не выходят за пределы карточек и сеток. */
+.hero > *,
+.home-info-grid > *,
+.project-grid > *,
+.project-card,
+.project-card__body,
+.footer-nav,
+.factlist,
+.row{min-width:0}
+
+.page-title,
+.subtitle,
+.project-card__body h3,
+.row-title,
+.row-sub{overflow-wrap:anywhere}
+
+@media(max-width:700px){
+  main.container{padding-inline:16px;padding-bottom:40px}
+  .section,.card{padding:18px}
+  .page-title{font-size:clamp(32px,10vw,46px);letter-spacing:-.045em}
+  .subtitle{margin-bottom:22px;font-size:16px}
+  .hero{gap:20px}
+  .project-card__body{padding:18px}
+  .project-card__actions .btn{flex-basis:100%}
+  .map-wrapper iframe,.home-info-grid .map-wrapper iframe{height:260px}
+}
+
+@media(max-width:420px){
+  .brand{font-size:16px}
+  .brand > img{width:34px;height:34px;border-radius:10px}
+  .page-title{font-size:30px}
+  .subtitle{font-size:15px}
+  .section,.card{padding:14px}
+  .footer-nav{gap:9px 14px}
+}
+
+@media(min-width:1400px){
+  .page-title{
+    max-width:none;
+    white-space:nowrap;
+  }
+}
+
+/* Подвал повторяет лаконичную навигацию основного интерфейса. */
+.footer{
+  margin-top:0;
+  padding:0;
+  border-top:1px solid var(--line);
+  background:transparent;
+  font-size:13px;
+}
+
+.footer .footer-inner{
+  min-height:92px;
+  flex-direction:row;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  text-align:left;
+}
+
+.footer-nav{
+  justify-content:flex-start;
+  gap:18px;
+}
+
+.footer-nav a{
+  min-height:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--muted);
+  font-weight:500;
+}
+
+.footer-nav a:hover{
+  border:0;
+  background:transparent;
+  color:#9fcbff;
+  transform:none;
+}
+
+@media(min-width:1100px){
+  .footer .footer-inner{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .footer .footer-inner > span{
+    position:absolute;
+    left:0;
+    white-space:nowrap;
+  }
+
+  .footer-nav{justify-content:center}
+  .footer .footer-inner::after{display:none}
+}
+
+@media(min-width:701px) and (max-width:1099px){
+  .footer .footer-inner{
+    min-height:0;
+    padding-top:22px;
+    padding-bottom:24px;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-align:center;
+  }
+
+  .footer-nav{justify-content:center}
+}
+
+@media(max-width:700px){
+  .footer .footer-inner{
+    min-height:0;
+    padding-top:24px;
+    padding-bottom:28px;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:16px;
+  }
+
+  .footer-nav{
+    display:flex;
+    width:auto;
+    gap:10px 16px;
+  }
+
+  .footer-nav a:last-child:nth-child(odd){grid-column:auto}
 }

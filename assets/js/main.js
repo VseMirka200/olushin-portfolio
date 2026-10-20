@@ -129,16 +129,13 @@ function updateTeachingExperience() {
 }
 
 /**
- * Управляет мобильной навигацией и меню достижений.
- * Закрывает открытые панели по клику снаружи и по клавише Escape.
+ * Управляет мобильной навигацией.
+ * Закрывает меню по клику снаружи, после перехода по ссылке и по клавише Escape.
  */
 class Navigation {
   constructor() {
     this.burger = document.querySelector('[data-burger]');
     this.nav = document.querySelector('[data-nav]');
-    this.dropdown = document.querySelector('[data-dropdown]');
-    this.dropdownButton = this.dropdown?.querySelector('[data-dropdown-btn]') || null;
-
     this.onDocumentClick = this.onDocumentClick.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
   }
@@ -151,12 +148,7 @@ class Navigation {
       });
     }
 
-    this.dropdownButton?.addEventListener('click', (event) => {
-      event.preventDefault();
-      this.toggleDropdown();
-    });
-
-    if (this.nav || this.dropdown) {
+    if (this.nav) {
       document.addEventListener('click', this.onDocumentClick);
       document.addEventListener('keydown', this.onKeyDown);
     }
@@ -173,29 +165,15 @@ class Navigation {
     this.burger.setAttribute('aria-expanded', 'false');
   }
 
-  toggleDropdown() {
-    if (!this.dropdown || !this.dropdownButton) return;
-    const isOpen = this.dropdown.classList.toggle('open');
-    this.dropdownButton.setAttribute('aria-expanded', String(isOpen));
-  }
-
-  closeDropdown() {
-    if (!this.dropdown || !this.dropdownButton) return;
-    this.dropdown.classList.remove('open');
-    this.dropdownButton.setAttribute('aria-expanded', 'false');
-  }
-
   onDocumentClick(event) {
     if (this.nav && this.burger && !this.nav.contains(event.target) && !this.burger.contains(event.target)) {
       this.closeNavigation();
     }
-    if (this.dropdown && !this.dropdown.contains(event.target)) this.closeDropdown();
   }
 
   onKeyDown(event) {
     if (event.key !== 'Escape') return;
     this.closeNavigation();
-    this.closeDropdown();
   }
 }
 
