@@ -14,6 +14,7 @@ const ACHIEVEMENT_FILES = Object.freeze({
     'diplomas/04_2025-undated.webp',
     'certificates/05_2025-05-22.webp',
     'diplomas/06_2025-undated.webp',
+    'diplomas/15_06_2025.webp',
     'gratitude/07_2025-03-20.webp',
     'gratitude/08_2025-undated.webp',
     'gratitude/09_2025-05-30.webp',
@@ -33,6 +34,8 @@ const ACHIEVEMENT_FILES = Object.freeze({
     'certificates/23_2026-09-13.webp',
     'certificates/24_2026-09-13.webp',
     'certificates/25_2026-09-13.webp',
+    'certificates/26_2026-undated.webp',
+    'diplomas/27_2026-09-24.webp',
   ],
   students: [
     'certificates/01_2025-undated.webp',
@@ -820,6 +823,10 @@ class AchievementGallery {
   // Извлекает полную дату или хотя бы год из имени файла для сортировки и фильтрации.
   extractDate(name) {
     const value = name.replace(/\.[^.]+$/, '');
+    const dayFirstDate = value.match(/^(\d{1,2})_(\d{1,2})_(20\d{2})$/);
+    if (dayFirstDate) {
+      return this.parseDateInput(`${dayFirstDate[1]}.${dayFirstDate[2]}.${dayFirstDate[3]}`);
+    }
     const fullDate = value.match(/(20\d{2})[-_.](\d{1,2})[-_.](\d{1,2})/);
     if (fullDate) {
       const date = new Date(Number(fullDate[1]), Number(fullDate[2]) - 1, Number(fullDate[3]));
