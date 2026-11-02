@@ -58,6 +58,7 @@ const ACHIEVEMENT_FILES = Object.freeze({
     'certificates/18_2026-04-18.webp',
     'certificates/19_2026-04-18.webp',
     'certificates/20_2026-04-18.webp',
+    'certificates/21_2026-10-06.webp',
   ],
 });
 
