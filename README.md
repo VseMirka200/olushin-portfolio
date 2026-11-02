@@ -54,3 +54,14 @@ pages/
 .github/workflows/       автоматическая публикация сайта
 index.html               главная страница
 ```
+
+## Проверка перед публикацией
+
+Без дополнительных зависимостей можно проверить локальные ссылки, файлы галерей и синтаксис JavaScript:
+
+```bash
+python scripts/check_site.py
+node --check assets/js/main.js
+```
+
+Проверка также автоматически выполняется в GitHub Actions для каждого Pull Request.
