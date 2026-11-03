@@ -1,0 +1,29 @@
+name: Проверка статического сайта
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Проверить файлы и JavaScript
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить исходный код
+        uses: actions/checkout@v4
+
+      - name: Настроить Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Проверить ссылки и каталог наград
+        run: python scripts/check_site.py
+
+      - name: Проверить синтаксис JavaScript
+        run: node --check assets/js/main.js
