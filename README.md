@@ -85,14 +85,13 @@ node --check assets/js/main.js
 - [CodeQL security analysis](https://github.com/VseMirka200/olushin-portfolio/actions/workflows/codeql.yml) — автоматический анализ JavaScript на потенциальные уязвимости.
 - [Публикация на GitHub Pages](https://github.com/VseMirka200/olushin-portfolio/actions/workflows/deploy-pages.yml) — развёртывание сайта.
 
-Dependabot может создавать предложения по обновлению используемых GitHub Actions; **автоматическое слияние таких предложений отключено**. Решение о принятии обновлений остаётся за сопровождающим.
+Автоматическое слияние обновлений отключено. Изменения в GitHub Actions вносятся вручную через Pull Requests и проходят обязательные проверки перед слиянием.
 
 ## Структура репозитория
 
 ```text
 olushin-portfolio/
 ├── .github/
-│   ├── dependabot.yml
 │   └── workflows/
 │       ├── check-site.yml
 │       ├── codeql.yml
